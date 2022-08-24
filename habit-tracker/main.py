@@ -34,7 +34,7 @@ def view_history(track):
     show = show_history(track)
 
     for x in range(0, len(show)):
-        table.add_row(show[x][0], show[x][1], show[x][2], str(show[x][3]), str(show[x][3]))
+        table.add_row(show[x][0], show[x][1], show[x][2], str(show[x][3]), str(show[x][4]))
 
     console.print(table)
 
