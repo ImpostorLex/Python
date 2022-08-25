@@ -3,7 +3,7 @@ from rich.console import Console
 from rich import print
 from rich.table import Table
 import typer
-from database import insert_habit, show_all, insert_time, show_history
+from database import insert_habit, show_all, insert_time, show_history, remove, update_habit
 
 
 # Creating the objects from the library.
@@ -32,11 +32,12 @@ def view_history(track):
     table.add_column("Minutes", justify="right", style="yellow")
 
     show = show_history(track)
+    if show:
+        for x in range(0, len(show)):
+            table.add_row(show[x][0], show[x][1], show[x][2], str(show[x][3]), str(show[x][4]))
 
-    for x in range(0, len(show)):
-        table.add_row(show[x][0], show[x][1], show[x][2], str(show[x][3]), str(show[x][4]))
-
-    console.print(table)
+        console.print(table)
+    
 
 @app.command(short_help="Shows table")
 def habit():
@@ -56,12 +57,33 @@ def time(habit: str, hour: int, min: int):
     else:
         typer.echo("Inserting record.")
         insert_time(hour, min, habit)
+
     view_habit()
 
 @app.command(short_help="Show a specfic habit history")
 def history(habit : str):
     view_history(habit)
 
+@app.command(short_help="Delete a habit history will be also deleted. REQUIRED [HABIT]")
+def delete(habit: str):
+    decision = typer.prompt(f"Are you sure you want to delete {habit}, [Y/n]? ")
+
+    if decision == 'Y':
+        remove(habit)
+        view_habit()
+        typer.echo(f"Deletion of habit {habit} succesful.")
+    elif decision == 'N':
+        typer.echo(f"Deletion of habit {habit} cancelled.")
+    else:
+        typer.echo("Incorrect input type 'Y' or 'n' only.")
+
+@app.command(short_help="Update a category or a habit. REQUIRED ['H' for habit and 'C' for category]], [OLD VALUE] [NEW VALUE]")
+def update(field: str, old_val: str, new_val : str):
+    if field == 'H' or field == "C":
+        update_habit(field, old_val, new_val)
+        view_history()
+    else:
+        typer.echo("Wrong input.")
 
 if __name__ == "__main__":
     app()
