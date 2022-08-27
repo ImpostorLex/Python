@@ -1,3 +1,4 @@
+from nis import cat
 import sqlite3
 from datetime import date
 import typer
@@ -54,8 +55,8 @@ def show_all():
     
     return habits
 
-def show_history(param):
-    all = c.execute('SELECT * FROM history where habit = :habit', {'habit':param}).fetchall()
+def show_history(find):
+    all = c.execute('SELECT * FROM history where habit = :habit', {'habit':find}).fetchall()
     habits = []
 
     if all:
@@ -64,7 +65,7 @@ def show_history(param):
         
         return habits
     else:
-        typer.echo(f"It looks like that habit {param} does not exist")
+        typer.echo(f"It looks like that habit {habit} does not exist")
 
 stripped_all = []
 hours = []
@@ -124,19 +125,23 @@ def remove(habit):
         typer.echo("It looks like that habit does not exists")
 
 def update_habit(field, old, new):
-    habit_exist = c.execute("Select * from habit where habit = :habit", {'habit': old})
+    habit_exist = c.execute("Select * from habits where habit = :habit", {'habit': old}).fetchone()
+    
 
     if habit_exist:
 
-        if field == 'H':
+        if field == 'H' and habit_exist[0] == old:
             c.execute('update habits set habit = :habit where habit = :old_habit', {'habit': new, 'old_habit':old})
             c.execute('update history set habit = :habit where habit = :old_habit', {'habit': new, 'old_habit':old})
             conn.commit()
+            return True
 
-        else:
+        elif field == "C" and habit_exist[1] == old:
             c.execute('update habits set category = :habit where habit = :old_habit', {'habit': new, 'old_habit':old})
             c.execute('update history set category = :habit where habit = :old_habit', {'habit': new, 'old_habit':old})
             conn.commit()
-
+            return True
+        else:
+            return False
 
 create_table()

@@ -10,6 +10,7 @@ from database import insert_habit, show_all, insert_time, show_history, remove, 
 console = Console()
 app = typer.Typer()
 
+
 def view_habit():
     table = Table(title="My Habits")
     table.add_column("Habit", justify="right", style="cyan", no_wrap=True)
@@ -22,6 +23,7 @@ def view_habit():
         table.add_row(show[x][0], show[x][1], show[x][2], str(show[x][3]))
 
     console.print(table)
+
 
 def view_history(track):
     table = Table(title="My Habits")
@@ -60,9 +62,11 @@ def time(habit: str, hour: int, min: int):
 
     view_habit()
 
+
 @app.command(short_help="Show a specfic habit history")
 def history(habit : str):
     view_history(habit)
+
 
 @app.command(short_help="Delete a habit history will be also deleted. REQUIRED [HABIT]")
 def delete(habit: str):
@@ -77,11 +81,17 @@ def delete(habit: str):
     else:
         typer.echo("Incorrect input type 'Y' or 'n' only.")
 
+
 @app.command(short_help="Update a category or a habit. REQUIRED ['H' for habit and 'C' for category]], [OLD VALUE] [NEW VALUE]")
 def update(field: str, old_val: str, new_val : str):
-    if field == 'H' or field == "C":
-        update_habit(field, old_val, new_val)
-        view_history()
+    if field == 'H' or field == "C":            
+        is_succesful = update_habit(field, old_val, new_val)
+
+        if is_succesful:
+            view_history(new_val)
+        else:
+            typer.echo("It looks like that does not exist")
+        
     else:
         typer.echo("Wrong input.")
 
