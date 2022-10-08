@@ -101,7 +101,7 @@ def insert_time(hour, minutes, habit):
 
         if mins_sum >= 60:
             to_hrs = round((mins_sum / 60), 2)
-            print(to_hrs)
+            
         
         total_time = to_hrs + hrs_sum + hour
         c.execute("Update habits set total_hours  = :total_hours where habit = :habit", {'total_hours': total_time, 'habit': habit})
