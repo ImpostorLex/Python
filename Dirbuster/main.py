@@ -1,10 +1,10 @@
 import ipaddress
 from click import FileError
-from importlib_metadata import distributions
+from ifaddr import IP
 import typer
-from pythonping import ping
 from ipaddress import ip_address
 import os.path
+from icmplib import async_ping, async_multiping, async_resolve
 
 app = typer.Typer()
 get_ip = ""
@@ -22,7 +22,7 @@ def d(url:str, path:str):
         
         
     else:
-        typer.echo("Invalid schema maybe check again.")
+        typer.echo("Invalid schema maybe, check again.")
     
     try: 
         is_ip = ipaddress.ip_address(get_ip)
@@ -41,12 +41,10 @@ def d(url:str, path:str):
         ctr = 0
         with open(path, "r") as word:
             wordlists = word.readlines()
-            dirb = url + wordlists[ctr]
-            typer.echo(dirb)
-            # ping(dirb, verbose=True)
-            #  ctr = ctr + 1
-        
-        
+            dirb = url + "yellow"                #wordlists[ctr]
+            x = async_ping(dirb, count=4, id=None, privileged=True)
+            ctr = ctr + 1          
+            typer.echo(x)
 
 if __name__ == "__main__":
     app()
