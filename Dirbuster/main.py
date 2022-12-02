@@ -1,10 +1,8 @@
 import ipaddress
 from click import FileError
-from ifaddr import IP
 import typer
-from ipaddress import ip_address
 import os.path
-from icmplib import async_ping, async_multiping, async_resolve
+from icmplib import ping
 
 app = typer.Typer()
 get_ip = ""
@@ -39,12 +37,15 @@ def d(url:str, path:str):
     
     else:
         ctr = 0
-        with open(path, "r") as word:
-            wordlists = word.readlines()
-            dirb = url + "yellow"                #wordlists[ctr]
-            x = async_ping(dirb, count=4, id=None, privileged=True)
+        word = open(path, "r")
+        wordlists = word.readlines()
+
+        for word in wordlists:
+            dirb = url + wordlists[ctr]
+            x = ping(dirb, count=4, id=None, privileged=True)
             ctr = ctr + 1          
-            typer.echo(x)
+            typer.echo(x.is_alive)
+
 
 if __name__ == "__main__":
     app()
