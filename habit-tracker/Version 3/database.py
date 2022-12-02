@@ -150,94 +150,48 @@ def update_habit(field, old, new):
         else:
             return False
 
-def month(habit:str, year:int):
-    yr = []
-    mths = []
-    day = []
-    hrs = []
-    mins = []
+def month(habit:str, year:int):   
 
-    unq_mths = []
-    before_month = 0
+    hrs = 0
+    mins = 0
     ctr = 0
-    ctr2 = 0
-    total_hrs_per_month = []
-    to_hrs = 0
-    months_in_names = []
+    hr_and_mins_per_month = []
+    existing_months = []
 
-    habit_exist = c.execute("Select * from habits where habit = :habit", {'habit': habit}).fetchone()
+    habit_exist = c.execute("Select * from history where habit = :habit and date_added LIKE :year", {'habit': habit, "year": f"%{year}%"}).fetchone()
 
+   
     if habit_exist:
-        # Returns a list of tuples with a format of Year - Month - Day
-        get_date = c.execute("Select date_added, hours, minutes from history where habit = :habit", {'habit':habit}).fetchall()   
-        # get_date len 121 - Dec 1 2022
         
-        # Convert the extraced date from date_added then convert it to datetime format: Date format example: 2018-12-31
-        to_date = [datetime.strptime(get_date[x][0], "%Y-%m-%d").date() for x in range(0, len(get_date))]
+        get_date = c.execute("Select date_added, hours, minutes from history where habit = :habit and date_added LIKE :year", {'habit':habit, 'year': f"%{year}%"}).fetchall()   
         
-        # ic(to_date) - matches current index
+         # ic| before_month: '2022-12
+        before_month = get_date[0][0][:7]
 
-        # Seperating month, day and summing up hours and mins.
-        for x in range(0, len(get_date)):
+        for x in range (0, len(get_date)):
+            if before_month == get_date[x][0][:7]:
+                hrs += get_date[x][1]
+                mins += get_date[x][2]
+                ic(f"{hrs}:{mins}")
+                if get_date[x][0][5:7] not in existing_months:    
+                    existing_months.append(get_date[x][0][5:7])
+  
+            else:   
+                ic(f"{hrs}:{mins}")
+                hr_and_mins_per_month.append((hrs + round(mins / 60)))
+                hrs = 0 
+                mins = 0
+                ctr = x
+                before_month = get_date[ctr][0][:7]
 
-            # Checks the date_added table if that month is not in the unq_mths list.
-            if to_date[x].month not in unq_mths:
-                
-                unq_mths.append(to_date[x].month)
-                # ic(unq_mths) shows a list of [8 to 12] = 5
-                # Categorize the to_date dates to their category.
-                yr.append(to_date[x].year)
-                mths.append(to_date[x].month)
-                day.append(to_date[x].day)
+                # hr_and_mins_per_month: [8.6, 42.93, 69.03, 66.87, 0.78] - 0.78 should be 1.x
 
-        # If inputted year does not exist yet return error msg.
-        if len(unq_mths) <= 1 or year not in yr:
-                return "1"
-
-       
-        while ctr != len(unq_mths):         
-            
-            
-            # Insert the first month of the to_date list to before_month.
-            before_month = to_date[ctr].month
-            ic(before_month) # outputs all 8 two times.
-            # ic(f"seperating values: {len(to_date)}")  121 output
-
-            # Iterate every rows / ctr2 default value is 0
-            for z in range(ctr2, len(get_date)):
-                
-                # Check if the to_date month value matches the before_month value
-                if int(to_date[z].month) == before_month:
-                    # If true then put mins and hour in their respective list
-                    mins.append(get_date[z][2])
-                    hrs.append(get_date[z][1])
-                    
-                    # Divided the mns list total to 60 and append the value to_hrs list
-                    if sum(mins) > 60:
-                        to_hrs = round((sum(mins) / 60), 2)
-                             
-
-                # If iterated new month is not the same as the before montth change the value of before_month to new recent iterated month
-                elif int(to_date[z].month) != before_month:
-                    total_hrs_per_month.append(to_hrs + sum(hrs))
-
-                    # TOD0: Dec 1 2022 current problem is index stops at 118 and does not continue to 121
-                    ic(f"It stops from {z} - ") 
-                    before_month = int(to_date[z].month)  
-                    # ctr2 will save the last iterated row so hrs and mins from different month will not be saved from the first month     
-                    ctr2 = z
-                    # ctr will change the value of the before_month to the index 1 on the list
-                    ctr += 1
-                    ic(f"{unq_mths}, {ctr}")
-                    # clear the hrs, mins and to_hrs to make way for new values for the new month to be calculated.
-                    mins.clear()
-                    hrs.clear()
-                    to_hrs = 0
-
-        # Output is correct :- 
-        months_in_names = [calendar.month_name[num] for num in unq_mths]
-        ic(months_in_names)
-
+        ic(f"{hrs}:{mins}")
+        hr_and_mins_per_month.append((hrs + round(mins / 60)))
+        ic(hr_and_mins_per_month)
+        #letter_format_months: ['August', 'September', 'October', 'November', 'December']
+        letter_format_months = [calendar.month_name[int(num)] for num in existing_months]
+        ic(letter_format_months, hr_and_mins_per_month)
         plt.figure(figsize=(10,7), dpi=120)
         plt.title(f'Total hours spend on {habit} per month', fontsize=18)
         plt.yticks(fontsize=14)
@@ -245,14 +199,22 @@ def month(habit:str, year:int):
 
         ax1 = plt.gca()
 
-        sns.barplot(x=months_in_names, y=total_hrs_per_month, palette="rocket", ax=ax1)
+        sns.barplot(x=letter_format_months, y=hr_and_mins_per_month, palette="rocket", ax=ax1)
         ax1.axhline(0, color="k", clip_on=False)
         ax1.set_ylabel("Hours")
         ax1.xaxis.label.set_color('Purple')   
 
         plt.show()
-   
-        
-
+    
+    else:
+        return "1"
 
 create_table()
+
+# Date Dec 2 2022: database sum values
+
+# From DB: 143:3089 = 194.48
+
+# From graph: 8,6, 42.93, 69.03, 66.87, 0.78 = 188
+
+# From graph without roundoff: 9, 43, 69, 67, 1 = 189
