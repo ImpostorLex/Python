@@ -172,12 +172,12 @@ def month(habit:str, year:int):
             if before_month == get_date[x][0][:7]:
                 hrs += get_date[x][1]
                 mins += get_date[x][2]
-                ic(f"{hrs}:{mins}")
+                
                 if get_date[x][0][5:7] not in existing_months:    
                     existing_months.append(get_date[x][0][5:7])
   
             else:   
-                ic(f"{hrs}:{mins}")
+                
                 hr_and_mins_per_month.append((hrs + round(mins / 60)))
                 hrs = 0 
                 mins = 0
@@ -186,7 +186,6 @@ def month(habit:str, year:int):
 
                 # hr_and_mins_per_month: [8.6, 42.93, 69.03, 66.87, 0.78] - 0.78 should be 1.x
 
-        ic(f"{hrs}:{mins}")
         hr_and_mins_per_month.append((hrs + round(mins / 60)))
         ic(hr_and_mins_per_month)
         #letter_format_months: ['August', 'September', 'October', 'November', 'December']
