@@ -13,7 +13,7 @@ app = typer.Typer()
 today = date.today()
 
 # Iniates connection to the database
-conn = sqlite3.connect("/home/root-a/Documents/Python/Anything/habit-tracker/Version 2/totrack.db")
+conn = sqlite3.connect("/home/root-a/Documents/Python/Anything/habit-tracker/Version 3/totrack.db")
 conn.execute("PRAGMA foreign_keys = 1")
 # Enable us to execute and fetch SQL queries.
 c = conn.cursor()
@@ -58,6 +58,7 @@ def show_all():
     
     for habit in all:
         habits.append(habit)
+        ic(habits)
     
     return habits
 
@@ -151,7 +152,8 @@ def update_habit(field, old, new):
             return False
 
 def month(habit:str, year:int):   
-
+    total_hrs = 0
+    total_mins  = 0
     hrs = 0
     mins = 0
     ctr = 0
@@ -172,13 +174,16 @@ def month(habit:str, year:int):
             if before_month == get_date[x][0][:7]:
                 hrs += get_date[x][1]
                 mins += get_date[x][2]
-                
+
+                total_hrs += get_date[x][1]
+                total_mins += get_date[x][2]
+
                 if get_date[x][0][5:7] not in existing_months:    
                     existing_months.append(get_date[x][0][5:7])
   
             else:   
                 
-                hr_and_mins_per_month.append((hrs + round(mins / 60)))
+                hr_and_mins_per_month.append((hrs + round(mins / 60, 2)))
                 hrs = 0 
                 mins = 0
                 ctr = x
@@ -186,8 +191,8 @@ def month(habit:str, year:int):
 
                 # hr_and_mins_per_month: [8.6, 42.93, 69.03, 66.87, 0.78] - 0.78 should be 1.x
 
-        hr_and_mins_per_month.append((hrs + round(mins / 60)))
-        ic(hr_and_mins_per_month)
+        hr_and_mins_per_month.append((hrs + round(mins / 60, 2)))
+        ic(hr_and_mins_per_month, total_mins, total_hrs)
         #letter_format_months: ['August', 'September', 'October', 'November', 'December']
         letter_format_months = [calendar.month_name[int(num)] for num in existing_months]
         ic(letter_format_months, hr_and_mins_per_month)
