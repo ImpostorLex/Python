@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+
+<body>
+    <form method="POST" action="{{ url_for('main') }}">
+        {{ form.csrf_token }}
+        {{ form.title.label }}
+        {{ form.title(size=20) }}
+        {{ form.description.label }}
+        {{ form.description(size=20) }}
+        <button type="submit" value="Add" class="btn btn-primary">Submit</button>
+    </form>
+</body>
+
+</html>
