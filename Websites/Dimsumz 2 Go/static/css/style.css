@@ -1,0 +1,29 @@
+a {
+    text-decoration: none;
+}
+
+.container {
+    background: #fff;
+}
+
+
+.login-bg {
+    background-image: url("/static/images/login-bg1.png");
+    /* #f55052 */
+
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 100vh;
+}
+
+.register-logo {
+    font-family: 'Open Sans', sans-serif;
+    color: #f55052;
+
+}
+
+.input-width {
+    width: 300px;
+    /* set the same width as the input boxes */
+}
