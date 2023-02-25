@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link href="static/css/style.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Golos+Text&family=Open+Sans:ital,wght@1,800&family=Permanent+Marker&family=Poppins:wght@300&display=swap"
+        rel="stylesheet">
+    <title>Dimsumz 2 Go</title>
+</head>
+
+<body>
+
+    <!-- navbar -->
+    <!-- <nav class="navbar bg-body-tertiary navbar-expand-lg fixed-top py-0">
+        <div class="container-fluid" style="background-color: #f55052;">
+
+            <a class="navbar-brand navbar-char" href="{{ url_for('dashboard') }}"
+                style="font-size: 40px !important; padding-left: 20px;">
+                Dimsumz 2 Go
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link navbar-char mx-3" href="#">Home</a>
+                    <a class="nav-link navbar-char mx-3" href="#">Features</a>
+                    <a class="nav-link navbar-char mx-3" href="#">Pricing</a>
+                    <a class="nav-link navbar-char mx-3">Disabled</a>
+                </div>
+            </div>
+    </nav> -->
+
+
+    <div class="position-relative">
+        <img src="/static/images/dimsum-dash-bg.jpg" alt="Dimsum dashboard" class="img-dashboard">
+        <div
+            class="d-flex flex-column justify-content-center align-items-center position-absolute top-0 start-0 end-0 bottom-0">
+            <h2 class="text-white text-center mb-4" style="font-size: 5rem; font-weight: 900 !important;">Dimsumz 2 Go
+            </h2>
+            <p class="text-white text-center" style="font-size: 25px; font-weight: 400;">Recipe and Sales Information
+                Management System</p>
+        </div>
+    </div>
+
+    <br>
+    <div class="container">
+
+
+        {% if user == 1 %}
+        <hr>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+
+            <div class="col">
+                <div class="card">
+                    <a href="">
+                        <!-- Image by beechmore-books -->
+                        <img src="/static/images/beechmore-books.jpg" class="card-img-top card-img-height"
+                            alt="Recipes">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">Recipes</h5>
+                        <p class="card-text">View instructions on how to do your favorite recipes</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card">
+                    <a href="{{ url_for('unauthorized') }}">
+                        <!-- Image by markus-winkler -->
+                        <img src="/static/images/analytics.jpg" class="card-img-top card-img-height is_disabled"
+                            alt="Analytics">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">Analytics</h5>
+                        <p class="card-text">Take a look at on what's trending.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card">
+                    <a href="{{ url_for('unauthorized') }}">
+                        <img src="/static/images/inventory.jpg" class="card-img-top card-img-height is_disabled"
+                            alt="Inventories">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">Ingredients</h5>
+                        <p class="card-text">Track and see what ingredients are due for re-stocking</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card">
+                    <a href="{{ url_for('unauthorized') }}">
+                        <img src="/static/images/dimsum-dash-bg.jpg" class="card-img-top card-img-height is_disabled"
+                            alt="...">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">Card title</h5>
+                        <p class="card-text">This is a longer card with supporting text below.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- // Accountant  -->
+            {% elif user == 2 %}
+            <hr>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+
+                <div class="col">
+                    <div class="card">
+                        <a href="{{ url_for('unauthorized') }}">
+                            <!-- Image by beechmore-books -->
+                            <img src="/static/images/beechmore-books.jpg"
+                                class="card-img-top card-img-height is_disabled" alt="Recipes">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">Recipes</h5>
+                            <p class="card-text">View instructions on how to do your favorite recipes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card">
+                        <a href="{{ url_for('graphs') }}">
+                            <!-- Image by markus-winkler -->
+                            <img src="/static/images/analytics.jpg" class="card-img-top card-img-height"
+                                alt="Analytics">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">Analytics</h5>
+                            <p class="card-text">Take a look at on what's trending.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card">
+                        <a href="{{ url_for('inventory') }}">
+                            <img src="/static/images/inventory.jpg" class="card-img-top card-img-height"
+                                alt="Inventories">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">Ingredients</h5>
+                            <p class="card-text">Track and see what ingredients are due for re-stocking</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card">
+                        <a href="{{ url_for('unauthorized') }}">
+                            <img src="/static/images/dimsum-dash-bg.jpg"
+                                class="card-img-top card-img-height is_disabled" alt="...">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">This is a longer card with supporting text below.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Head Chef -->
+                {% elif user == 3 %}
+                <hr>
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+
+                    <div class="col">
+                        <div class="card">
+                            <a href="{{ url_for('recipes') }}">
+                                <!-- Image by beechmore-books -->
+                                <img src="/static/images/beechmore-books.jpg" class="card-img-top card-img-height"
+                                    alt="Recipes">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">Recipes</h5>
+                                <p class="card-text">View instructions on how to do your favorite recipes</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="card">
+                            <a href="{{ url_for('unauthorized') }} ">
+                                <!-- Image by markus-winkler -->
+                                <img src="/static/images/analytics.jpg" class="card-img-top card-img-height is_disabled"
+                                    alt="Analytics">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">Analytics</h5>
+                                <p class="card-text">Take a look at on what's trending.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="card">
+                            <a href="{{ url_for('inventory') }}">
+                                <img src="/static/images/inventory.jpg" class="card-img-top card-img-height"
+                                    alt="Inventories">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">Ingredients</h5>
+                                <p class="card-text">Track and see what ingredients are due for re-stocking</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="card">
+                            <a href="{{ url_for('unauthorized') }} ">
+                                <img src="/static/images/dimsum-dash-bg.jpg"
+                                    class="card-img-top card-img-height is_disabled" alt="...">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <p class="card-text">This is a longer card with supporting text below.</p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    {% else %}
+                    <hr>
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+                        <div class="col">
+                            <div class="card">
+                                <a href="{{ url_for('recipes') }}">
+                                    <!-- Image by beechmore-books -->
+                                    <img src="/static/images/beechmore-books.jpg" class="card-img-top card-img-height"
+                                        alt="Recipes">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title">Recipes</h5>
+                                    <p class="card-text">View instructions on how to do your favorite recipes</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="card">
+                                <a href="{{ url_for('graphs') }}">
+                                    <!-- Image by markus-winkler -->
+                                    <img src="/static/images/analytics.jpg" class="card-img-top card-img-height"
+                                        alt="Analytics">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title">Analytics</h5>
+                                    <p class="card-text">Take a look at on what's trending.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="card">
+                                <a href="{{ url_for('inventory') }}">
+                                    <img src="/static/images/inventory.jpg" class="card-img-top card-img-height"
+                                        alt="Inventories">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title">Ingredients</h5>
+                                    <p class="card-text">Track and see what ingredients are due for re-stocking</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="card">
+                                <a href="">
+                                    <img src="/static/images/dimsum-dash-bg.jpg" class="card-img-top card-img-height"
+                                        alt="...">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title">Card title</h5>
+                                    <p class="card-text">This is a longer card with supporting text below.</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <br>
+                <div class="container">
+                    <footer class="py-3 my-4">
+                        <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                            <li class="nav-item"><a href="{{ url_for('dashboard') }}"
+                                    class="nav-link px-2 text-muted">Home</a>
+                            </li>
+                            <li class="nav-item"><a href="{{ url_for('register') }}"
+                                    class="nav-link px-2 text-muted">Register</a></li>
+                            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Pricing</a></li>
+                            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">FAQs</a></li>
+                            <li class="nav-item"><a href="{{ url_for('logout') }}"
+                                    class="nav-link px-2 text-muted">Logout</a>
+                            </li>
+                        </ul>
+                        <p class="text-center text-muted">© 2023 Dimsumz 2 Go, Inc</p>
+                    </footer>
+                </div>
+
+
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+                    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+                    crossorigin="anonymous">
+                    </script>
+</body>
+
+</html>

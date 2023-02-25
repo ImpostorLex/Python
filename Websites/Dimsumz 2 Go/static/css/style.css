@@ -1,11 +1,37 @@
 a {
     text-decoration: none;
+
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+.navbar-char:hover {
+    color: black !important;
+}
+
+hr {
+    height: 5px;
+    /* set the height to make it thicker */
+    width: 75%;
+    /* set the width to 75% of the screen */
+    margin: 30px auto;
+    /* center the element horizontally and add some vertical spacing */
+    background-color: #000;
+    /* set the color to black */
+    border: none;
+    /* remove the default border */
 }
 
 .container {
     background: #fff;
 }
 
+.card-img-height {
+    height: 400px;
+    object-fit: cover;
+}
 
 .login-bg {
     background-image: url("/static/images/login-bg1.png");
@@ -26,4 +52,21 @@ a {
 .input-width {
     width: 300px;
     /* set the same width as the input boxes */
+}
+
+.img-dashboard {
+    margin: 0;
+    padding: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    height: 600px;
+    width: 100%;
+    object-fit: cover;
+    filter: brightness(0.5) blur(0.5px);
+}
+
+.is_disabled {
+    filter: brightness(0.5) blur(1px);
 }

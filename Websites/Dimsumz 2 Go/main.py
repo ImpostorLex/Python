@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from icecream import ic
@@ -114,7 +114,40 @@ def register():
 @login_required
 def dashboard():
 
-    return "Wow secret hehe"
+    user = 4
+
+    return render_template("dashboard.html", user=user)
+
+
+@app.route("/logout", methods=['GET', 'POST'])
+def logout():
+    logout_user()
+
+    return redirect(url_for('index'))
+
+
+@app.route("/unauthorized", methods=['GET', 'POST'])
+def unauthorized():
+
+    return "<h1>Unauthorized, you don't have enough permission to access this page.</h1>"
+
+
+@app.route('/graphs', methods=['GET', 'POST'])
+def graphs():
+
+    return "For Accountant"
+
+
+@app.route('/inventory', methods=['GET', 'POST'])
+def inventory():
+
+    return "For Accountant/Chef"
+
+
+@app.route('/recipes', methods=['GET', 'POST'])
+def recipes():
+
+    return "Chef/Employee"
 
 
 @login_manager.user_loader
@@ -124,4 +157,4 @@ def load_user(user_id):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
