@@ -34,7 +34,7 @@ hr {
 }
 
 .login-bg {
-    background-image: url("/static/images/login-bg1.png");
+    background-image: url("");
     /* #f55052 */
 
     background-size: cover;
@@ -44,13 +44,13 @@ hr {
 }
 
 .register-logo {
-    font-family: 'Open Sans', sans-serif;
+    font-weight: 900;
     color: #f55052;
 
 }
 
 .input-width {
-    width: 300px;
+    width: 400px;
     /* set the same width as the input boxes */
 }
 
