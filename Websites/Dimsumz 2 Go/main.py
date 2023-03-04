@@ -5,6 +5,8 @@ from icecream import ic
 from flask_hashing import Hashing
 from form import LoginForm, RegistrationForm
 from time import sleep
+from functools import wraps
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///dimsumz2go.db"
@@ -14,6 +16,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 hashing = Hashing(app)
 db = SQLAlchemy(app)
+user_type = 0
 
 
 class Users(UserMixin, db.Model):
@@ -35,6 +38,23 @@ class Employees(UserMixin, db.Model):
 
 
 db.create_all()
+
+
+def check_user(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        current_url = request.path  # /graphs
+
+        id_and_url = (user_type, current_url)
+
+        categories = [(1, "/recipes"), (2, "/graphs"), (2, '/inventory'), (3, '/recipes'),
+                      (3, '/inventory'), (4, '/recipes'), (4, 'graphs'), (5, 'inventory')]
+
+        if id_and_url in categories:
+            return func(*args, **kwargs)
+        else:
+            return redirect(url_for('unauthorized'))
+    return wrapper
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -113,10 +133,11 @@ def register():
 @app.route("/dashboard", methods=['GET', 'POSTS'])
 @login_required
 def dashboard():
+    global user_type
 
-    user = 4
+    user_type = 1
 
-    return render_template("dashboard.html", user=user)
+    return render_template("dashboard.html", user=user_type)
 
 
 @app.route("/logout", methods=['GET', 'POST'])
@@ -133,24 +154,35 @@ def unauthorized():
 
 
 @app.route('/graphs', methods=['GET', 'POST'])
+@check_user
 def graphs():
 
     return "For Accountant"
 
 
 @app.route('/inventory', methods=['GET', 'POST'])
+@login_required
+@check_user
 def inventory():
 
     return "For Accountant/Chef"
 
 
 @app.route('/recipes', methods=['GET', 'POST'])
+@login_required
+@check_user
 def recipes():
 
-    return "Chef/Employee"
+    return render_template("recipes.html")
 
 
-@login_manager.user_loader
+@ app.route('/home', methods=['GET', 'POST'])
+def home():
+
+    return "<h1>Simple static website for users</h1>"
+
+
+@ login_manager.user_loader
 def load_user(user_id):
 
     return Users.query.get(int(user_id))
