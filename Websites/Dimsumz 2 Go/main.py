@@ -48,7 +48,7 @@ def check_user(func):
         id_and_url = (user_type, current_url)
 
         categories = [(1, "/recipes"), (2, "/graphs"), (2, '/inventory'), (3, '/recipes'),
-                      (3, '/inventory'), (4, '/recipes'), (4, 'graphs'), (5, 'inventory')]
+                      (3, '/inventory'), (4, '/recipes'), (4, '/graphs'), (4, '/inventory')]
 
         if id_and_url in categories:
             return func(*args, **kwargs)
@@ -82,6 +82,7 @@ def index():
     return render_template("login.html", form=forms)
 
 
+# TODO create a what role for register to be automatically populated.
 @app.route('/register', methods=['POST', 'GET'])
 def register():
 
@@ -135,7 +136,7 @@ def register():
 def dashboard():
     global user_type
 
-    user_type = 1
+    user_type = 4
 
     return render_template("dashboard.html", user=user_type)
 

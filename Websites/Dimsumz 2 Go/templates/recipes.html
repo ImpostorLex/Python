@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<!-- TODO create pre-populate for recipes -->
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,61 +16,126 @@
         href="https://fonts.googleapis.com/css2?family=Golos+Text&family=Open+Sans:ital,wght@1,800&family=Permanent+Marker&family=Poppins:wght@300&display=swap"
         rel="stylesheet">
     <title>Dimsumz 2 Go</title>
+    <script src="https://kit.fontawesome.com/b5d820a994.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px; min-height: 100vh;">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-            <svg class="bi me-2" width="40" height="32">
-                <use xlink:href="#bootstrap"></use>
-            </svg>
-            <span class="fs-4">Recipes</span>
-        </a>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a href="{{ url_for('home') }}" class="nav-link active" aria-current="page">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#home"></use>
-                    </svg>
-                    Home
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('dashboard') }}" class="nav-link text-white">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#speedometer2"></use>
-                    </svg>
-                    Dashboard
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('graphs') }}" class="nav-link text-white">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#table"></use>
-                    </svg>
-                    Graphs
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('inventory') }}" class="nav-link text-white">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#grid"></use>
-                    </svg>
-                    Inventory
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('logout') }}" class="nav-link text-white">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#people-circle"></use>
-                    </svg>
-                    Sign-out
-                </a>
-            </li>
-        </ul>
-        <hr>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark"
+                    style="width: 280px; min-height: 100vh; position: sticky; top: 0;">
+                    <a href="/"
+                        class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                        <svg class="bi me-2" width="40" height="32">
+                            <use xlink:href="#bootstrap"></use>
+                        </svg>
+                        <span class="fs-4">Recipes</span>
+                    </a>
+                    <hr>
+                    <ul class="nav nav-pills flex-column mb-auto">
+                        <li class="nav-item">
+                            <a href="{{ url_for('home') }}" class="nav-link text-white" aria-current="page">
+                                <i class="fa-solid fa-house"></i>
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('dashboard') }}" class="nav-link active">
+                                <i class="fa-solid fa-table-columns"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('graphs') }}" class="nav-link text-white">
+                                <i class="fa-solid fa-chart-simple"></i>
+                                Graphs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('inventory') }}" class="nav-link text-white">
+                                <i class="fa-solid fa-warehouse"></i>
+                                Inventory
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('logout') }}" class="nav-link text-white">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                Sign-out
+                            </a>
+                        </li>
+                    </ul>
+                    <hr>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="row" style="padding: 20px 200px 0 0">
+
+                    <!-- To be populated below  -->
+                    <div class="col-md-4" style="padding: 20px 0 20px 0">
+                        <div class="card">
+                            <a href="{{ url_for('recipes') }}">
+                                <!-- Image by beechmore-books -->
+                                <img src="/static/images/beechmore-books.jpg"
+                                    class="card-img-top card-img-height recipe-img-hover" alt="Recipes">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">Recipes</h5>
+                                <p class="card-text">View instructions on how to do your favorite recipes</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- To be populated above can delete below except create card-->
+
+                    <div class="col-md-4" style="padding-top:20px">
+                        <div class="card">
+                            <a href="{{ url_for('recipes') }}">
+                                <!-- Image by beechmore-books -->
+                                <img src="/static/images/beechmore-books.jpg" class="card-img-top card-img-height"
+                                    alt="Recipes">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">Recipes</h5>
+                                <p class="card-text">View instructions on how to do your favorite recipes</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4" style="padding-top:20px">
+                        <div class="card">
+                            <a href="{{ url_for('recipes') }}">
+                                <!-- Image by beechmore-books -->
+                                <img src="/static/images/beechmore-books.jpg" class="card-img-top card-img-height"
+                                    alt="Recipes">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">Recipes</h5>
+                                <p class="card-text">View instructions on how to do your favorite recipes</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Create Card -->
+                    <div class="col-md-4" style="padding-top:20px">
+                        <div class="card">
+                            <a href="{{ url_for('recipes') }}">
+                                <!-- flaticon:  Shapes and symbols icons created by rizal2109 -->
+                                <img src="/static/images/plus.png" class="card-img-top card-img-height recipe-img-hover"
+                                    alt="Recipes">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">Add Recipe</h5>
+                                <p class="card-text">You can add a recipe by clicking the image above.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
+
 
 
 
