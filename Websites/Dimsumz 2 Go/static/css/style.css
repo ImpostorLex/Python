@@ -103,3 +103,33 @@ hr {
     bottom: 10px;
     left: 10px;
 }
+
+@media (max-width: 768px) {
+
+    .textarea-conf {
+        max-width: 100%;
+    }
+}
+
+.create-img {
+    background-image: url('/static/images/pineapple.jpg');
+    background-size: cover;
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 600px;
+    width: 100%;
+    object-fit: cover;
+    filter: brightness(0.8) blur(0.8);
+    width: 100%;
+}
+
+.navbar-create {
+    z-index: 1 !important;
+}
+
+.create-navbar-font {
+    color: #000;
+    font-weight: 400;
+    font-size: 2.5rem;
+}

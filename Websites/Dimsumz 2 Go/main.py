@@ -62,6 +62,7 @@ class Image(db.Model):
     menu_item_id = db.Column(db.Integer, db.ForeignKey(
         'menu_item.id'), nullable=False)
     path = db.Column(db.String(250), nullable=False)
+    instructions = db.Column(db.String(1500), nullable=False)
 
 
 db.create_all()
@@ -224,14 +225,18 @@ def home():
     return "<h1>Simple static website for users</h1>"
 
 
+# TODO finish this
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
-@check_user
+# @check_user TODO find a way to implement this:
 def create():
 
-    form = CreateForm
+    form = CreateForm()
 
-    return render_template('create.html', form=form)
+    form.ingredients.choices = [
+        ('1', 'Option 1'), ('2', 'Option 2'), ('3', 'Option 3')]
+
+    return render_template('create.html', form=form, error="asd")
 
 
 @login_manager.user_loader

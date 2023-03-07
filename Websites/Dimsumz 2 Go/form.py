@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, PasswordField, URLField, SelectField
+from wtforms import StringField, SelectField, PasswordField, URLField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Length, EqualTo
-from flask_ckeditor import CKEditorField
 
 
 class LoginForm(FlaskForm):
@@ -31,14 +30,14 @@ class RegistrationForm(FlaskForm):
 
 class CreateForm(FlaskForm):
 
-    recipe = StringField(label='Recipe', validators=[
-                         DataRequired(), Length(min=3, max=32)])
-    desc = StringField(label="Title Description", validators=[
-                       DataRequired(), Length(min=10, max=138)])
+    recipe = StringField(label='Recipe Title', validators=[
+                         DataRequired(), Length(min=3, max=32)], render_kw={"placeholder": "Burger"})
+    desc = TextAreaField(label="Title Description", validators=[
+        DataRequired(), Length(min=10, max=138)], render_kw={"placeholder": "A Krabby Patty made by spongebob", "cols":  50})
     url = URLField(label='URL of the image', validators=[
-                   DataRequired(), Length(min=20, max=250)])
+                   DataRequired(), Length(min=20, max=250)], render_kw={"placeholder": "http://krustykrab.com/burger.png"})
     ingredients = SelectField(
         label="Select an Ingredient", validators=[DataRequired()])
 
-    instructions = CKEditorField(
-        'Instructions of Recipe', validators=[DataRequired()])
+    instructions = TextAreaField(
+        'Instructions of Recipe', validators=[DataRequired()], render_kw={"placeholder": "To cook this, you need the secret ingredient and some love.", "cols":  50})
