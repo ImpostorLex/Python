@@ -20,11 +20,13 @@
 </head>
 
 <body>
+
+    <!-- Sidebar  -->
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-3 col-lg-3 px-0">
                 <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark"
-                    style="width: 280px; min-height: 100vh; position: sticky; top: 0;">
+                    style="width: 230px; min-height: 100vh; position: sticky; top: 0;">
                     <a href="/"
                         class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
                         <svg class="bi me-2" width="40" height="32">
@@ -68,73 +70,56 @@
                     <hr>
                 </div>
             </div>
-
-            <div class="col-md-9">
-                <div class="row" style="padding: 20px 200px 0 0">
+            <!-- Card Content -->
+            <div class="col-md-9 col-lg-9">
+                <div class="row" style="padding: 20px 250px 0 0">
 
                     <!-- To be populated below  -->
-                    <div class="col-md-4" style="padding: 20px 0 20px 0">
-                        <div class="card">
-                            <a href="{{ url_for('recipes') }}">
+                    {% for m, i in zip(menu, img) %}
+                    <div class="col-md-6 col-lg-4 col-sm-12" style="padding: 20px 0 20px 30px;">
+                        <div class="card custom-card">
+                            <a href="{{ url_for('item', num=m.id) }}">
                                 <!-- Image by beechmore-books -->
-                                <img src="/static/images/beechmore-books.jpg"
-                                    class="card-img-top card-img-height recipe-img-hover" alt="Recipes">
+                                <img src="{{ i.path }}" class="card-img-top card-img-height recipe-img-hover"
+                                    alt="Recipes">
                             </a>
                             <div class="card-body">
-                                <h5 class="card-title">Recipes</h5>
-                                <p class="card-text">View instructions on how to do your favorite recipes</p>
+                                <!-- Maximum of 32 characters -->
+                                <h5 class="card-title custom-title-truncate ">{{ m.name }}</h5>
+                                <!-- Maximum of 138 Characters for short description. -->
+                                <p class="card-text custom-truncate">{{ m.desc }}</p>
+                                <button type="submit" value="Add" class="btn btn-danger btn-position my-1 mx-auto">Buy
+                                    for ₱{{ m.cost}}</button>
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
                     <!-- To be populated above can delete below except create card-->
 
-                    <div class="col-md-4" style="padding-top:20px">
-                        <div class="card">
-                            <a href="{{ url_for('recipes') }}">
-                                <!-- Image by beechmore-books -->
-                                <img src="/static/images/beechmore-books.jpg" class="card-img-top card-img-height"
-                                    alt="Recipes">
-                            </a>
-                            <div class="card-body">
-                                <h5 class="card-title">Recipes</h5>
-                                <p class="card-text">View instructions on how to do your favorite recipes</p>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="col-md-4" style="padding-top:20px">
-                        <div class="card">
-                            <a href="{{ url_for('recipes') }}">
-                                <!-- Image by beechmore-books -->
-                                <img src="/static/images/beechmore-books.jpg" class="card-img-top card-img-height"
-                                    alt="Recipes">
-                            </a>
-                            <div class="card-body">
-                                <h5 class="card-title">Recipes</h5>
-                                <p class="card-text">View instructions on how to do your favorite recipes</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Create Card -->
-                    <div class="col-md-4" style="padding-top:20px">
-                        <div class="card">
-                            <a href="{{ url_for('recipes') }}">
+                    <!-- Create Card / dont delete-->
+                    <div class="col-md-6 col-lg-4 col-sm-12" style="padding: 20px 0 20px 30px;">
+                        <div class="card custom-card">
+                            <a href="{{ url_for('create') }}">
                                 <!-- flaticon:  Shapes and symbols icons created by rizal2109 -->
                                 <img src="/static/images/plus.png" class="card-img-top card-img-height recipe-img-hover"
                                     alt="Recipes">
                             </a>
                             <div class="card-body">
-                                <h5 class="card-title">Add Recipe</h5>
-                                <p class="card-text">You can add a recipe by clicking the image above.</p>
+                                <h5 class="card-title custom-title-truncate">Add Recipe</h5>
+                                <p class="card-text custom-truncate">You can add a recipe by clicking the image above.
+                                </p>
                             </div>
                         </div>
                     </div>
 
                 </div>
             </div>
+
+
         </div>
     </div>
+
 
 
 

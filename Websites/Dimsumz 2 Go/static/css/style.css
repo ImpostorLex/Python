@@ -78,3 +78,28 @@ hr {
 .navbar-nav .nav-link {
     padding-left: 50px !important;
 }
+
+.custom-card {
+    height: 600px;
+}
+
+.custom-truncate {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+}
+
+.custom-title-truncate {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.btn-position {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
