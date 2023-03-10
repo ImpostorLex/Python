@@ -18,7 +18,7 @@ hr {
     /* set the width to 75% of the screen */
     margin: 30px auto;
     /* center the element horizontally and add some vertical spacing */
-    background-color: #000;
+    background-color: #f55052;
     /* set the color to black */
     border: none;
     /* remove the default border */
@@ -58,6 +58,11 @@ hr {
     /* set the same width as the input boxes */
 }
 
+.input-width1 {
+    width: 350px;
+    /* set the same width as the input boxes */
+}
+
 .img-dashboard {
     margin: 0;
     padding: 0;
@@ -81,6 +86,7 @@ hr {
 
 .custom-card {
     height: 600px;
+    width: 380px;
 }
 
 .custom-truncate {
@@ -132,4 +138,69 @@ hr {
     color: #000;
     font-weight: 400;
     font-size: 2.5rem;
+}
+
+/* Test both */
+
+.sidebar {
+    position: sticky;
+    top: 0;
+}
+
+
+.hovertext {
+    position: relative;
+}
+
+.hovertext:before {
+    content: attr(data-hover);
+    visibility: hidden;
+    opacity: 0;
+    width: 140px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 0;
+    transition: opacity 1s ease-in-out;
+
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 110%;
+}
+
+.hovertext:hover:before {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (max-width: 767px) {
+    .card {
+        width: 300px;
+        max-width: 600px;
+        margin: 20px auto 20px 0;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+}
+
+#select-box-container {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+}
+
+.select-box {
+    width: 100%;
+    display: block;
+    margin-bottom: 10px;
+}
+
+#select-box-container br {
+    display: block;
+    content: "";
+    margin-top: 10px;
 }

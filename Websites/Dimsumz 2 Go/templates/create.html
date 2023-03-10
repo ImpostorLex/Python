@@ -20,137 +20,122 @@
 <body>
 
 
-    <div class="create-img">
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-dark shadow-5-strong navbar-create">
-            <!-- Container wrapper -->
-            <div class="container-fluid">
-                <!-- Navbar brand -->
-                <a class="navbar-brand create-navbar-font" href="#">Dimsumz 2 Go</a>
-
-                <!-- Collapsible wrapper -->
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left links -->
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item" style="font-size: 1rem;">
-                            <a class=" nav-link active text-dark" aria-current="page" href="#">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="#">Link</a>
-                        </li>
-                        <!-- Navbar dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link text-dark" href="#" id="navbarDropdown" role="button"
-                                data-mdb-toggle="dropdown" aria-expanded="false">
-                                Dropdown
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-        </nav>
-    </div>
-    <!-- Navbar -->
-
-    <!-- <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-3 col-lg-3">
-                <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark"
-                    style="width: 230px; min-height: 100vh; position: sticky; top: 0;">
-                    <a href="/"
-                        class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                        <svg class="bi me-2" width="40" height="32">
-                            <use xlink:href="#bootstrap"></use>
-                        </svg>
-                        <span class="fs-4">Recipes</span>
+    <nav class="navbar navbar-expand-lg sticky-top" style="background-color: #f55052;">
+        <div class=" container-fluid">
+            <a href="{{ url_for('home') }}" class="nav-link py-3 px-2 hovertext" data-hover="Home" title=""
+                data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
+                <i class="fa-solid fa-2x" style="color:white;">Dimsumz 2 Go</i>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a href="{{ url_for('dashboard') }}" class="nav-link py-3 px-2 hovertext" data-hover="Dashboard"
+                        title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-table-columns fa-2x" style="color:white;"></i>
                     </a>
-                    <hr>
-                    <ul class="nav nav-pills flex-column mb-auto">
-                        <li class="nav-item">
-                            <a href="{{ url_for('home') }}" class="nav-link text-white" aria-current="page">
-                                <i class="fa-solid fa-house"></i>
-                                Home
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('dashboard') }}" class="nav-link active">
-                                <i class="fa-solid fa-table-columns"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('graphs') }}" class="nav-link text-white">
-                                <i class="fa-solid fa-chart-simple"></i>
-                                Graphs
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('inventory') }}" class="nav-link text-white">
-                                <i class="fa-solid fa-warehouse"></i>
-                                Inventory
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('logout') }}" class="nav-link text-white">
-                                <i class="fa-solid fa-right-from-bracket"></i>
-                                Sign-out
-                            </a>
-                        </li>
-                    </ul>
-                    <hr>
-                </div>
-            </div>
-            <div class="col-md-9 col-lg-9">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h1 class="register-logo">Registration</h1>
-                        <form method="POST" action="{{ url_for('register') }}">
-                            {{ form.csrf_token }}
-                            {{ form.recipe.label}}
-                            <br>
-                            {{ form.recipe(size=50, class_="textarea-conf") }}
-                            <br>
-                            <br>
-                            {{ form.desc.label }}
-                            <br>
-                            {{ form.desc(size=80, class_="textarea-conf") }}
-                            <br>
-                            <br>
-                            {{ form.url.label }}
-                            <br>
-                            {{ form.url(size=50, class_="textarea-conf") }}
-                            <br>
-                            <br>
-                            {{ form.ingredients.label }}
-                            <br>
-                            {{ form.ingredients(class_="textarea-conf") }}
-                            <br>
-                            <br>
-                            {{ form.instructions.label }}
-                            <br>
-                            {{ form.instructions(size=80, class_="textarea-conf") }}
-                            {% if error %}
-                            <ul class="my-2 text-danger text-center" style="list-style: none;">
-                                <li>{{ error }}</li>
-                            </ul>
-                            {% endif %}
-                            <br>
-                            <div class="text-center">
-                                <button type="submit" value="Add"
-                                    class="btn btn-danger my-3 input-width mx-auto">Submit</button>
-                            </div>
-                        </form>
-                    </div>
+                    <a href="{{ url_for('inventory') }}" class="nav-link py-3 px-2 hovertext" data-hover="Graphs"
+                        title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-warehouse fa-2x" style="color:white;"></i>
+                    </a>
+
+                    <a href="{{ url_for('graphs') }}" class="nav-link py-3 px-2 hovertext" data-hover="Graphs" title=""
+                        data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-chart-simple fa-2x" style="color:white;"></i>
+                    </a>
+
+                    <a href="{{ url_for('logout') }}" class="nav-link py-3 px-2 hovertext" data-hover="Sign-out"
+                        title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-right-from-bracket fa-2x" style="color:white;"></i>
+                    </a>
                 </div>
             </div>
         </div>
+    </nav>
 
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-12 mx-auto" style="padding-top: 40px;">
+                <h1 class="register-logo">Registration</h1>
+                <form method="POST" action="{{ url_for('register') }}">
+                    {{ form.csrf_token }}
+                    <div class="col-md-6">
+                        {{ form.recipe.label}}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.recipe(size=50, class_="textarea-conf") }}
+                    </div>
+                    <br>
+                    <div class="col-md-6">
+                        {{ form.desc.label }}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ form.desc(size=80, class_="textarea-conf") }}
+                    </div>
+                    <br>
+                    <div class="col-md-6">
+                        {{ form.url.label }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.url(size=50, class_="textarea-conf") }}
+                    </div>
+                    <br>
+                    <div class="col-md-6">
+                        {{ form.ingredients.label }}
+                    </div>
+
+                    <div class="col-md-6" id="select-box-container">
+                        {{ form.ingredients(class_="textarea-conf", id="ingredients-select-box") }}
+                    </div>
+
+                    <div class="text-center">
+                        <button type="button" value="Add" id="my-button"
+                            class="btn btn-outline-danger my-3 input-width1 mx-auto">Add another Ingredient</button>
+                    </div>
+
+
+                    <br>
+                    <div class="col-12">
+                        {{ form.instructions.label }}
+                    </div>
+                    <div class="col-12">
+                        {{ form.instructions(size=80, class_="textarea-conf") }}
+                    </div>
+                    {% if error %}
+                    <ul class="my-2 text-danger text-center" style="list-style: none;">
+                        <li>{{ error }}</li>
+                    </ul>
+                    {% endif %}
+                    <br>
+                    <div class="text-center">
+                        <button type="submit" value="Add"
+                            class="btn btn-outline-danger my-3 input-width1 mx-auto">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
- -->
 
 
-
+    <script>
+        let selectBoxCount = 0;
+        const selectBoxContainer = document.getElementById("select-box-container");
+        const myButton = document.getElementById("my-button");
+        const selectBox = document.getElementById("ingredients-select-box");
+        myButton.addEventListener("click", function () {
+            selectBoxCount++;
+            const label = document.createElement("label");
+            label.textContent = "Select an Ingredient";
+            const clonedSelectBox = selectBox.cloneNode(true);
+            clonedSelectBox.name = "select-box-" + selectBoxCount;
+            selectBoxContainer.appendChild(label);
+            selectBoxContainer.appendChild(clonedSelectBox);
+        });
+    </script>
 
 
 

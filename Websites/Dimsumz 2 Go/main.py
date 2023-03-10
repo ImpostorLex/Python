@@ -236,7 +236,7 @@ def create():
     form.ingredients.choices = [
         ('1', 'Option 1'), ('2', 'Option 2'), ('3', 'Option 3')]
 
-    return render_template('create.html', form=form, error="asd")
+    return render_template('create.html', form=form, error="")
 
 
 @login_manager.user_loader
