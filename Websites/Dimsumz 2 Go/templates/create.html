@@ -59,14 +59,14 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-12 mx-auto" style="padding-top: 40px;">
-                <h1 class="register-logo">Registration</h1>
-                <form method="POST" action="{{ url_for('register') }}">
+                <h1 class="register-logo">Create A Recipe</h1>
+                <form method="POST" action="{{ url_for('create') }}">
                     {{ form.csrf_token }}
                     <div class="col-md-6">
                         {{ form.recipe.label}}
                     </div>
                     <div class="col-md-6">
-                        {{ form.recipe(size=50, class_="textarea-conf") }}
+                        {{ form.recipe(size=40, class_="textarea-conf") }}
                     </div>
                     <br>
                     <div class="col-md-6">
@@ -74,27 +74,38 @@
                     </div>
 
                     <div class="col-md-6">
-                        {{ form.desc(size=80, class_="textarea-conf") }}
+                        {{ form.desc(size=70, class_="textarea-conf1") }}
                     </div>
                     <br>
                     <div class="col-md-6">
                         {{ form.url.label }}
                     </div>
                     <div class="col-md-6">
-                        {{ form.url(size=50, class_="textarea-conf") }}
+                        {{ form.url(size=40, class_="textarea-conf") }}
                     </div>
                     <br>
+
                     <div class="col-md-6">
-                        {{ form.ingredients.label }}
+                        <div class="ingredient-container" id="select-box-container">
+                            {{ form.ingredients.label }}
+                            <br>
+                            {{ form.ingredients(class_="textarea-conf", id="ingredients-select-box") }}
+                        </div>
                     </div>
 
-                    <div class="col-md-6" id="select-box-container">
-                        {{ form.ingredients(class_="textarea-conf", id="ingredients-select-box") }}
+                    <div class="col-md-6">
+                        <div class="quantity-container" id="int-select-container">
+                            {{ form.quantity.label }}
+                            {{ form.quantity(class_="textarea-conf", id="quantity-field") }}
+                            {{ form.weight(class_="textarea-conf", id="weight-field") }}
+                        </div>
                     </div>
 
-                    <div class="text-center">
+
+                    <div class="text-left">
                         <button type="button" value="Add" id="my-button"
-                            class="btn btn-outline-danger my-3 input-width1 mx-auto">Add another Ingredient</button>
+                            class="btn btn-outline-danger my-3 input-width1 mx-auto">Add another
+                            Ingredient</button>
                     </div>
 
 
@@ -103,7 +114,7 @@
                         {{ form.instructions.label }}
                     </div>
                     <div class="col-12">
-                        {{ form.instructions(size=80, class_="textarea-conf") }}
+                        {{ form.instructions(size=70, class_="textarea-conf1") }}
                     </div>
                     {% if error %}
                     <ul class="my-2 text-danger text-center" style="list-style: none;">
@@ -111,7 +122,7 @@
                     </ul>
                     {% endif %}
                     <br>
-                    <div class="text-center">
+                    <div class="text-left">
                         <button type="submit" value="Add"
                             class="btn btn-outline-danger my-3 input-width1 mx-auto">Submit</button>
                     </div>
@@ -120,21 +131,54 @@
         </div>
     </div>
 
-
     <script>
-        let selectBoxCount = 0;
-        const selectBoxContainer = document.getElementById("select-box-container");
         const myButton = document.getElementById("my-button");
         const selectBox = document.getElementById("ingredients-select-box");
+        const quantityField = document.getElementById("quantity-field");
+        const weightField = document.getElementById("weight-field");
+        const selectBoxContainer = document.getElementById("select-box-container");
+        const intBoxContainer = document.getElementById("int-select-container");
+
+        const form = document.getElementById("my-form");
+        let selectBoxCount = 1;
+
         myButton.addEventListener("click", function () {
+            // create a new SelectField
+            const newSelectBox = selectBox.cloneNode(true);
+            newSelectBox.id = `ingredients-field-${selectBoxCount}`;
+            newSelectBox.name = `ingredients-field-${selectBoxCount}`;
+
+            // create a new IntegerField
+            const newQuantityField = quantityField.cloneNode(true);
+            newQuantityField.id = `quantity-field-${selectBoxCount}`;
+            newQuantityField.name = `quantity-field-${selectBoxCount}`;
+
+            // create a new SelectField
+            const newWeightField = weightField.cloneNode(true);
+            newWeightField.id = `weight-field-${selectBoxCount}`;
+            newWeightField.name = `weight-field-${selectBoxCount}`;
+
+            // create a new label for the SelectField
+            const selectBoxLabel = document.createElement("label");
+            selectBoxLabel.textContent = `Select an Ingredient ${selectBoxCount}`;
+
+            // create a new label for the IntegerField
+            const quantityLabel = document.createElement("label");
+            quantityLabel.textContent = `Quantity ${selectBoxCount}`;
+
+            // append the new fields to the form
+            selectBoxContainer.appendChild(selectBoxLabel);
+            selectBoxContainer.appendChild(newSelectBox);
+
+            intBoxContainer.appendChild(quantityLabel);
+            intBoxContainer.appendChild(newQuantityField);
+
+            intBoxContainer.appendChild(newWeightField);
+
+            // increment the counter
             selectBoxCount++;
-            const label = document.createElement("label");
-            label.textContent = "Select an Ingredient";
-            const clonedSelectBox = selectBox.cloneNode(true);
-            clonedSelectBox.name = "select-box-" + selectBoxCount;
-            selectBoxContainer.appendChild(label);
-            selectBoxContainer.appendChild(clonedSelectBox);
         });
+
     </script>
 
 

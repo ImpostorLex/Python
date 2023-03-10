@@ -117,6 +117,16 @@ hr {
     }
 }
 
+@media (max-width: 1000px) {
+
+    .textarea-conf1 {
+        max-width: 100%;
+    }
+}
+
+
+
+
 .create-img {
     background-image: url('/static/images/pineapple.jpg');
     background-size: cover;
@@ -203,4 +213,19 @@ hr {
     display: block;
     content: "";
     margin-top: 10px;
+}
+
+.ingredient-container,
+.quantity-container {
+    margin-bottom: 10px;
+}
+
+.quantity-container label {
+    display: block;
+}
+
+.quantity-container input {
+    display: inline-block;
+    margin-right: 10px;
+    width: 100px;
 }

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, PasswordField, URLField, SelectField, TextAreaField
+from wtforms import StringField, SelectField, PasswordField, URLField, SelectField, TextAreaField, FloatField
 from wtforms.validators import DataRequired, Length, EqualTo
 
 
@@ -38,6 +38,12 @@ class CreateForm(FlaskForm):
                    DataRequired(), Length(min=20, max=250)], render_kw={"placeholder": "http://krustykrab.com/burger.png"})
     ingredients = SelectField(
         label="Select an Ingredient", validators=[DataRequired()])
+
+    quantity = FloatField("Quantity", validators=[
+                          DataRequired()], render_kw={"placeholder": "1"})
+
+    weight = SelectField(
+        label="Select an Ingredient", validators=[DataRequired()], choices=[('oz', 'oz'), ('lb', 'lb'), ('g', 'g'), ('kg', 'kg')])
 
     instructions = TextAreaField(
         'Instructions of Recipe', validators=[DataRequired()], render_kw={"placeholder": "To cook this, you need the secret ingredient and some love.", "cols":  50})

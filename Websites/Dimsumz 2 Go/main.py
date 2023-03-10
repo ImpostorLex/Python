@@ -6,6 +6,7 @@ from flask_hashing import Hashing
 from form import LoginForm, RegistrationForm, CreateForm
 from time import sleep
 from functools import wraps
+from sqlalchemy import Date
 
 
 app = Flask(__name__)
@@ -18,6 +19,8 @@ hashing = Hashing(app)
 db = SQLAlchemy(app)
 user_type = 0
 
+
+# -------------------------------- Database Design -------------------------------- #
 
 class Users(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -65,6 +68,47 @@ class Image(db.Model):
     instructions = db.Column(db.String(1500), nullable=False)
 
 
+class Sale(db.Model):
+
+    __tablename__ = 'sale'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    menu_item_id = db.Column(db.Integer, db.ForeignKey(
+        'menu_item.id'), nullable=False)
+    date_added = db.Column(Date, nullable=False)
+    profit = db.Column(db.Float, nullable=False)
+
+
+class Ingredient(db.Model):
+
+    __tablename__ = 'ingredient'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(30), unique=False, nullable=False)
+    quantity = db.Column(db.Float, nullable=False)
+    cost = db.Column(db.Float(20), nullable=False)
+
+
+class Weight(db.Model):
+
+    __tablename__ = 'weight'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(30), unique=False, nullable=False)
+
+
+class menuItemIngredient(db.Model):
+
+    __tablename__ = 'menu_item_ingredients'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    menu_item_id = db.Column(db.Integer, db.ForeignKey(
+        'menu_item.id'), nullable=False)
+    ingredient_id = db.Column(db.Integer, db.ForeignKey(
+        'ingredient.id'), nullable=False)
+    list_order = db.Column(db.Integer, nullable=False)
+    weight_id = db.Column(db.Integer, db.ForeignKey(
+        'weight.id'), nullable=False)
+
+
+# -------------------------------- Database Design -------------------------------- #
+
 db.create_all()
 
 
@@ -84,6 +128,76 @@ def check_user(func):
         else:
             return redirect(url_for('unauthorized'))
     return wrapper
+
+# ---------------------------- FLASK FUNCTIONS ----------------------------
+
+
+@app.route('/create', methods=['GET', 'POST'])
+@login_required
+# @check_user TODO find a way to implement this:
+def create():
+
+    form = CreateForm()
+
+    # TODO: Will be populated by the ingredients table but for now these are the choices
+    form.ingredients.choices = [
+        ('12', 'Patty'), ('14', 'Salmon'), ('14.5', 'Pasta')]
+
+    if request.method == 'POST' and form.validate_on_submit():
+
+        cost = []
+        quantity = []
+        weight = []
+
+        ingredients_name = []
+        # Get the key-pair value for the Ingredients field but only the value for other fieds
+        for key, value in request.form.items():
+            if key.startswith('ingredients-field-') or key == 'ingredients':
+                cost.append(float(value))
+            elif key.startswith('quantity-field-') or key == 'quantity':
+                quantity.append(value)
+            elif key.startswith('weight-field-') or key == 'weight':
+                weight.append(value)
+
+            choice = next(
+                (c for c in form.ingredients.choices if c[0] == value), None)
+            if choice is not None:
+                # Append the stored value to the ingredients list
+                ingredients_name.append(choice[1])
+
+        # First insert a row into the menuItem table
+        recipe = request.form.get('recipe')
+        desc = request.form.get('desc')
+        cost = sum(cost)
+        menu_item = menuItem(name=recipe, desc=desc, cost=cost)
+        db.session.add(menu_item)
+        db.session.commit()
+
+        # Get the id of the inserted menu
+        menu_id = menu_item.id
+        ic(menu_id)
+
+        # Insert url and instruction and as well as the menu_id as the foreign key to the image table
+        url = request.form.get('url')
+        instructions = request.form.get('instructions')
+        image = Image(menu_item_id=menu_id, path=url,
+                      instructions=instructions)
+        db.session.add(image)
+        db.session.commit()
+
+        return redirect(url_for('recipes'))
+
+    return render_template('create.html', form=form, error="")
+
+
+@app.route("/dashboard", methods=['GET', 'POSTS'])
+@login_required
+def dashboard():
+    global user_type
+
+    user_type = 1
+
+    return render_template("dashboard.html", user=user_type)
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -111,10 +225,47 @@ def index():
     return render_template("login.html", form=forms)
 
 
-# TODO create a what role for register to be automatically populated.
+@app.route('/graphs', methods=['GET', 'POST'])
+@check_user
+def graphs():
+
+    return "For Accountant"
+
+
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+
+    return "<h1>Simple static website for users</h1>"
+
+
+@app.route('/inventory', methods=['GET', 'POST'])
+@login_required
+@check_user
+def inventory():
+
+    return "For Accountant/Chef"
+
+
+@app.route('/item/<int:num>', methods=['GET', 'POST'])
+@login_required
+# @check_user TODO find a way to implement this:
+def item(num):
+
+    img = Image.query.filter_by(id=num).first()
+
+    return f"{num} {img}"
+
+
+@app.route("/logout", methods=['GET', 'POST'])
+def logout():
+    logout_user()
+
+    return redirect(url_for('index'))
+
+
 @app.route('/register', methods=['POST', 'GET'])
 def register():
-
+    # TODO create a what role for register to be automatically populated
     form = RegistrationForm()
 
     if request.method == 'POST' and form.validate_on_submit():
@@ -160,44 +311,6 @@ def register():
     return render_template("register.html", form=form)
 
 
-@app.route("/dashboard", methods=['GET', 'POSTS'])
-@login_required
-def dashboard():
-    global user_type
-
-    user_type = 4
-
-    return render_template("dashboard.html", user=user_type)
-
-
-@app.route("/logout", methods=['GET', 'POST'])
-def logout():
-    logout_user()
-
-    return redirect(url_for('index'))
-
-
-@app.route("/unauthorized", methods=['GET', 'POST'])
-def unauthorized():
-
-    return "<h1>Unauthorized, you don't have enough permission to access this page.</h1> <br> <a href={{ url_for('dashboard') }}>Back to dashboard.</a>"
-
-
-@app.route('/graphs', methods=['GET', 'POST'])
-@check_user
-def graphs():
-
-    return "For Accountant"
-
-
-@app.route('/inventory', methods=['GET', 'POST'])
-@login_required
-@check_user
-def inventory():
-
-    return "For Accountant/Chef"
-
-
 @app.route('/recipes', methods=['GET', 'POST'])
 @login_required
 @check_user
@@ -209,34 +322,10 @@ def recipes():
     return render_template("recipes.html", menu=menus, img=imgs, zip=zip)
 
 
-@app.route('/item/<int:num>', methods=['GET', 'POST'])
-@login_required
-# @check_user TODO find a way to implement this:
-def item(num):
+@app.route("/unauthorized", methods=['GET', 'POST'])
+def unauthorized():
 
-    img = Image.query.filter_by(id=num).first()
-
-    return f"{num} {img}"
-
-
-@app.route('/home', methods=['GET', 'POST'])
-def home():
-
-    return "<h1>Simple static website for users</h1>"
-
-
-# TODO finish this
-@app.route('/create', methods=['GET', 'POST'])
-@login_required
-# @check_user TODO find a way to implement this:
-def create():
-
-    form = CreateForm()
-
-    form.ingredients.choices = [
-        ('1', 'Option 1'), ('2', 'Option 2'), ('3', 'Option 3')]
-
-    return render_template('create.html', form=form, error="")
+    return render_template("unauthorized.html")
 
 
 @login_manager.user_loader
