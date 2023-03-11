@@ -14,18 +14,21 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
 
     username = StringField(label='Username', validators=[
-                           DataRequired(), Length(min=4, max=30)])
+                           DataRequired(), Length(min=4, max=30)], render_kw={"placeholder": "JonTractor"})
     password = PasswordField(label='Password', validators=[
-        DataRequired(), Length(min=6, max=30)])
+        DataRequired(), Length(min=6, max=30)], render_kw={"placeholder": "6+ Characters"})
 
     confirmPassword = PasswordField(label='Confirm Password', validators=[
                                     DataRequired()])
 
     firstName = StringField(label='First name', validators=[
-                            DataRequired(), Length(min=2, max=30)])
+                            DataRequired(), Length(min=2, max=30)], render_kw={"placeholder": "Jon"})
 
     lastName = StringField(label='Last name', validators=[
-                           DataRequired(), Length(min=2, max=30)])
+                           DataRequired(), Length(min=2, max=30)], render_kw={"placeholder": "Tractor"})
+
+    role = SelectField("Role", validators=[DataRequired()], choices=[
+                       'Normal', 'Chef', 'Accountant', 'Admin'])
 
 
 class CreateForm(FlaskForm):

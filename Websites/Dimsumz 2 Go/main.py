@@ -26,11 +26,11 @@ class Users(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    employee_id = (db.Integer, db.ForeignKey('employees.id'))
+    employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'))
     # username is the primary key constraint and of course id is the primary key
     username = db.Column(db.String(250), unique=True, nullable=False)
     password = db.Column(db.String(450), unique=False, nullable=False)
-    access_type_id = (db.Integer, db.ForeignKey('access_type.id'))
+    access_type_id = db.Column(db.Integer, db.ForeignKey('access_type.id'))
 
 
 class Employees(UserMixin, db.Model):
@@ -195,7 +195,9 @@ def create():
 def dashboard():
     global user_type
 
-    user_type = 1
+    user = Users.query.filter_by(username=current_user.username).first()
+
+    user_type = user.access_type_id
 
     return render_template("dashboard.html", user=user_type)
 
@@ -274,6 +276,7 @@ def register():
         password = request.form.get('password')
         firstName = request.form.get('firstName')
         lastName = request.form.get('lastName')
+        role = request.form.get('role')
         confirm = request.form.get('confirmPassword')
 
         if password != confirm:
@@ -296,13 +299,15 @@ def register():
                 db.session.add(employee)
                 db.session.commit()
 
-                # Get the id of the inserted employee
+                # Get the id of the inserted employee and get id of the name of the role
                 employee_id = employee.id
-                ic(employee_id)
+                auth_level = accessType.query.filter_by(role=role).first()
+                auth_id = auth_level.id
+                ic(f"Employee ID is: {employee_id} and Auth Level is : {auth_id}")
 
-                # Insert a row into the Users table with the employee_id as the foreign key
+                # Insert a row into the Users table with the employee_id as the foreign key and access_type id as well
                 user = Users(username=username, password=h,
-                             employee_id=employee_id)
+                             employee_id=employee_id, access_type_id=auth_id)
                 db.session.add(user)
                 db.session.commit()
 

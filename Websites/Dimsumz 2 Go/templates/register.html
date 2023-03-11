@@ -16,14 +16,14 @@
 
 <body class="login-bg">
 
-    <div class="container-fluid">
+    <!-- <div class="container-fluid">
         <div class="row">
             <div class="col-md-6" style="height: 100vh; padding:0">
                 <img src="/static/images/dimsum-dash-bg.jpg" alt="dimsum-logo" height="100%" width="100%">
             </div>
 
             <div class="col-md-6 d-flex flex-column align-items-center justify-content-center" style="height: 100vh;">
-                <h1 class="register-logo">Registration</h1>
+                <h1 class="register-logo">Join the team</h1>
                 <form method="POST" action="{{ url_for('register') }}">
                     {{ form.csrf_token }}
                     {{ form.username.label}}
@@ -39,6 +39,11 @@
                     {{ form.lastName.label }}
                     <br>
                     {{ form.lastName(size=40) }}
+                    <br>
+                    <br>
+                    {{ form.role.label }}
+                    <br>
+                    {{ form.role() }}
                     <br>
                     <br>
                     {{ form.password.label }}
@@ -65,7 +70,71 @@
                 </div>
             </div>
         </div>
+    </div> -->
+
+    <div class="container" style="padding-top: 60px;">
+        <div class="card mx-auto rounded-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-7 d-none d-lg-block" style="padding: 20px 0 0 20px;">
+                        <!-- https://www.freepik.com/free-vector/chef-concept-illustration_7119088.htm#query=chef%20illustrations&position=9&from_view=search&track=ais Image by storyset on Freepik-->
+                        <img src="/static/images/register-bg.jpg" alt="dimsum-logo" class="img-fluid">
+                    </div>
+
+                    <div class="col-lg-5 d-flex flex-column align-items-center justify-content-center"
+                        style="padding-top: 20px;">
+                        <h1 class="register-logo" style="padding-bottom: 20px;">Join the team</h1>
+                        <form method="POST" action="{{ url_for('register') }}">
+                            {{ form.csrf_token }}
+                            {{ form.username.label}}
+                            <br>
+                            {{ form.username(size=40) }}
+                            <br>
+                            <br>
+                            {{ form.firstName.label }}
+                            <br>
+                            {{ form.firstName(size=40) }}
+                            <br>
+                            <br>
+                            {{ form.lastName.label }}
+                            <br>
+                            {{ form.lastName(size=40) }}
+                            <br>
+                            <br>
+                            {{ form.role.label }}
+                            <br>
+                            {{ form.role() }}
+                            <br>
+                            <br>
+                            {{ form.password.label }}
+                            <br>
+                            {{ form.password(size=40) }}
+                            <br>
+                            <br>
+                            {{ form.confirmPassword.label }}
+                            <br>
+                            {{ form.confirmPassword(size=40) }}
+                            {% if error %}
+                            <ul class="my-2 text-danger text-center" style="list-style: none;">
+                                <li>{{ error }}</li>
+                            </ul>
+                            {% endif %}
+                            <br>
+                            <div class="text-center">
+                                <button type="submit" value="Add"
+                                    class="btn btn-outline-danger my-3 input-width mx-auto">Submit</button>
+                            </div>
+                        </form>
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('index') }}">Already Registered?</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
+
 
 
 

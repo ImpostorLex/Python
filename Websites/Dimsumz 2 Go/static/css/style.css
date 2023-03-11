@@ -33,6 +33,13 @@ hr {
     object-fit: cover;
 }
 
+.card-centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
 .login-bg {
     background-image: url("");
     /* #f55052 */
@@ -54,12 +61,17 @@ hr {
 }
 
 .input-width {
-    width: 400px;
+    width: 350px;
     /* set the same width as the input boxes */
 }
 
 .input-width1 {
     width: 350px;
+    /* set the same width as the input boxes */
+}
+
+.input-width2 {
+    width: 320px;
     /* set the same width as the input boxes */
 }
 
