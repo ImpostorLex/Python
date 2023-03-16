@@ -107,7 +107,7 @@ class menuItemIngredient(db.Model):
         'weight.id'), nullable=False)
 
 
-# -------------------------------- Database Design -------------------------------- #
+# --------------------------------^ Database Design ^-------------------------------- #
 
 db.create_all()
 
@@ -115,10 +115,9 @@ db.create_all()
 def check_user(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        current_url = request.path  # /graphs
+        current_url = request.path
 
         id_and_url = (user_type, current_url)
-        ic(current_url)
 
         categories = [(1, "/recipes"), (2, "/graphs"), (2, '/inventory'), (3, '/recipes'),
                       (3, '/inventory'), (4, '/recipes'), (4, '/graphs'), (4, '/inventory')]
@@ -134,7 +133,6 @@ def check_user(func):
 
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
-# @check_user TODO find a way to implement this:
 def create():
 
     form = CreateForm()
@@ -227,6 +225,12 @@ def index():
     return render_template("login.html", form=forms)
 
 
+@app.route('/create-ingredient', methods=['GET', 'POST'])
+def addIngredients():
+
+    return render_template("Iamout")
+
+
 @app.route('/graphs', methods=['GET', 'POST'])
 @check_user
 def graphs():
@@ -245,7 +249,7 @@ def home():
 @check_user
 def inventory():
 
-    return "For Accountant/Chef"
+    return render_template('ingredient.html')
 
 
 @app.route('/item/<int:num>', methods=['GET', 'POST'])

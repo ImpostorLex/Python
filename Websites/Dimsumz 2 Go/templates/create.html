@@ -59,74 +59,76 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-12 mx-auto" style="padding-top: 40px;">
-                <h1 class="register-logo">Create A Recipe</h1>
-                <form method="POST" action="{{ url_for('create') }}">
-                    {{ form.csrf_token }}
-                    <div class="col-md-6">
-                        {{ form.recipe.label}}
-                    </div>
-                    <div class="col-md-6">
-                        {{ form.recipe(size=40, class_="textarea-conf") }}
-                    </div>
-                    <br>
-                    <div class="col-md-6">
-                        {{ form.desc.label }}
-                    </div>
-
-                    <div class="col-md-6">
-                        {{ form.desc(size=70, class_="textarea-conf1") }}
-                    </div>
-                    <br>
-                    <div class="col-md-6">
-                        {{ form.url.label }}
-                    </div>
-                    <div class="col-md-6">
-                        {{ form.url(size=40, class_="textarea-conf") }}
-                    </div>
-                    <br>
-
-                    <div class="col-md-6">
-                        <div class="ingredient-container" id="select-box-container">
-                            {{ form.ingredients.label }}
-                            <br>
-                            {{ form.ingredients(class_="textarea-conf", id="ingredients-select-box") }}
+                <div class="container-fixed-width mx-auto">
+                    <h1 class="register-logo">Create A Recipe</h1>
+                    <form method="POST" action="{{ url_for('create') }}">
+                        {{ form.csrf_token }}
+                        <div class="col-md-6">
+                            {{ form.recipe.label}}
                         </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="quantity-container" id="int-select-container">
-                            {{ form.quantity.label }}
-                            {{ form.quantity(class_="textarea-conf", id="quantity-field") }}
-                            {{ form.weight(class_="textarea-conf", id="weight-field") }}
+                        <div class="col-md-6">
+                            {{ form.recipe(size=40, class_="textarea-conf") }}
                         </div>
-                    </div>
+                        <br>
+                        <div class="col-md-6">
+                            {{ form.desc.label }}
+                        </div>
+
+                        <div class="col-md-6">
+                            {{ form.desc(size=70, class_="textarea-conf1") }}
+                        </div>
+                        <br>
+                        <div class="col-md-6">
+                            {{ form.url.label }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.url(size=40, class_="textarea-conf") }}
+                        </div>
+                        <br>
+
+                        <div class="col-md-6">
+                            <div class="ingredient-container" id="select-box-container">
+                                {{ form.ingredients.label }}
+                                <br>
+                                {{ form.ingredients(class_="textarea-conf", id="ingredients-select-box") }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="quantity-container" id="int-select-container">
+                                {{ form.quantity.label }}
+                                {{ form.quantity(class_="textarea-conf", id="quantity-field") }}
+                                {{ form.weight(class_="textarea-conf", id="weight-field") }}
+                            </div>
+                        </div>
 
 
-                    <div class="text-left">
-                        <button type="button" value="Add" id="my-button"
-                            class="btn btn-outline-danger my-3 input-width1 mx-auto">Add another
-                            Ingredient</button>
-                    </div>
+                        <div class="text-left">
+                            <button type="button" value="Add" id="my-button"
+                                class="btn btn-outline-danger my-3 input-width1 mx-auto">Add another
+                                Ingredient</button>
+                        </div>
 
 
-                    <br>
-                    <div class="col-12">
-                        {{ form.instructions.label }}
-                    </div>
-                    <div class="col-12">
-                        {{ form.instructions(size=70, class_="textarea-conf1") }}
-                    </div>
-                    {% if error %}
-                    <ul class="my-2 text-danger text-center" style="list-style: none;">
-                        <li>{{ error }}</li>
-                    </ul>
-                    {% endif %}
-                    <br>
-                    <div class="text-left">
-                        <button type="submit" value="Add"
-                            class="btn btn-outline-danger my-3 input-width1 mx-auto">Submit</button>
-                    </div>
-                </form>
+                        <br>
+                        <div class="col-12">
+                            {{ form.instructions.label }}
+                        </div>
+                        <div class="col-12">
+                            {{ form.instructions(size=70, class_="textarea-conf1") }}
+                        </div>
+                        {% if error %}
+                        <ul class="my-2 text-danger text-center" style="list-style: none;">
+                            <li>{{ error }}</li>
+                        </ul>
+                        {% endif %}
+                        <br>
+                        <div class="text-left">
+                            <button type="submit" value="Add"
+                                class="btn btn-outline-danger my-3 input-width1 mx-auto">Submit</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

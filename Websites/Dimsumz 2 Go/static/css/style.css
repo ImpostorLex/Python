@@ -96,6 +96,16 @@ hr {
     padding-left: 50px !important;
 }
 
+.container-fixed-width {
+    max-width: 800px;
+}
+
+
+.container-fixed-width.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .custom-card {
     height: 600px;
     width: 380px;
@@ -240,4 +250,14 @@ hr {
     display: inline-block;
     margin-right: 10px;
     width: 100px;
+}
+
+.table-responsive-sm {
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+.fa-gradient {
+    background: -webkit-linear-gradient(#F9A7B0, #FFD700);
+    -webkit-text-fill-color: transparent;
 }
