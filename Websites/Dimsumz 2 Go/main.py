@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from icecream import ic
 from flask_hashing import Hashing
-from form import LoginForm, RegistrationForm, CreateForm
+from form import LoginForm, RegistrationForm, CreateForm, IngredientForm
 from time import sleep
 from functools import wraps
 from sqlalchemy import Date
@@ -85,6 +85,8 @@ class Ingredient(db.Model):
     name = db.Column(db.String(30), unique=False, nullable=False)
     quantity = db.Column(db.Float, nullable=False)
     cost = db.Column(db.Float(20), nullable=False)
+    weight_id = db.Column(db.Integer, db.ForeignKey(
+        'weight.id'), nullable=False)
 
 
 class Weight(db.Model):
@@ -108,7 +110,6 @@ class menuItemIngredient(db.Model):
 
 
 # --------------------------------^ Database Design ^-------------------------------- #
-
 db.create_all()
 
 
@@ -138,8 +139,14 @@ def create():
     form = CreateForm()
 
     # TODO: Will be populated by the ingredients table but for now these are the choices
-    form.ingredients.choices = [
-        ('12', 'Patty'), ('14', 'Salmon'), ('14.5', 'Pasta')]
+    form.ingredients.choices = []
+
+    all_ingredients = Ingredient.query.all()
+
+    for ingredient in all_ingredients:
+
+        key_pair_value = (ingredient.cost, ingredient.name)
+        form.ingredients.choices.append(key_pair_value)
 
     if request.method == 'POST' and form.validate_on_submit():
 
@@ -228,7 +235,26 @@ def index():
 @app.route('/create-ingredient', methods=['GET', 'POST'])
 def addIngredients():
 
-    return render_template("Iamout")
+    form = IngredientForm()
+
+    if form.validate_on_submit() and request.method == 'POST':
+
+        name = request.form.get('name')
+        stock = request.form.get('stock')
+        price = request.form.get('price')
+        weight = request.form.get('weight')
+
+        weight_id = Weight.query.filter_by(name=weight).first()
+
+        ingredient = Ingredient(name=name, quantity=stock,
+                                cost=price, weight_id=weight_id.id)
+
+        db.session.add(ingredient)
+        db.session.commit()
+
+        return redirect(url_for('inventory'))
+
+    return render_template("ingredientForm.html", form=form)
 
 
 @app.route('/graphs', methods=['GET', 'POST'])

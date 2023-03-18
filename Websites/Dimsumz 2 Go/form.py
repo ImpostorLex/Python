@@ -50,3 +50,18 @@ class CreateForm(FlaskForm):
 
     instructions = TextAreaField(
         'Instructions of Recipe', validators=[DataRequired()], render_kw={"placeholder": "To cook this, you need the secret ingredient and some love.", "cols":  50})
+
+
+class IngredientForm(FlaskForm):
+
+    name = StringField(label='Ingredient', validators=[
+        DataRequired(), Length(min=3, max=32)], render_kw={"placeholder": "Patty"})
+
+    stock = FloatField(label="Quantity", validators=[
+        DataRequired()], render_kw={"placeholder": "3"})
+
+    price = FloatField(label="Price", validators=[
+        DataRequired()], render_kw={"placeholder": "20"})
+
+    weight = SelectField(
+        label="Weight Type", validators=[DataRequired()], choices=[('oz', 'oz'), ('lb', 'lb'), ('g', 'g'), ('kg', 'kg')])

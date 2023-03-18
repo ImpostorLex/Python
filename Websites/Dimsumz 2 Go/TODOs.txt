@@ -1,4 +1,5 @@
 1. Create a add new ingredient form.
     - When adding a new form the user should now be able to select "real" added ingredients
+    - Select an Ingredient should synch
 2. Create a mock design for view recipe.
 3. Fix the "check user function" 
