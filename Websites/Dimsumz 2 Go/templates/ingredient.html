@@ -59,7 +59,7 @@
                             <a style="padding-top:30px;" href="{{ url_for('addIngredients') }}"
                                 class="nav-link py-3 px-2 hovertext" data-hover="Add Ingredient" title=""
                                 data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Sign-out">
-                                <i class="fa-solid fa-gradient fa-circle-plus"></i>
+                                <i class="fa-solid fa-circle-plus " style="color:gold"></i>
                             </a>
                         </li>
                     </ul>
@@ -83,13 +83,15 @@
 
                     <tbody>
 
+                        {% for i,w in zip(ingre,weight_list) %}
                         <tr>
-                            <th scope="row">1</th>
-                            <td>Larry the Bird</td>
-                            <td>3</td>
-                            <td>3.5</td>
-                            <td>kg</td>
+                            <th scope="row">{{ loop.index0 + 1 }}</th>
+                            <td>{{ i.name }}</td>
+                            <td>{{ i.quantity }}</td>
+                            <td>{{ i.cost }}</td>
+                            <td>{{ w }}</td>
                         </tr>
+                        {% endfor %}
 
                     </tbody>
                 </table>

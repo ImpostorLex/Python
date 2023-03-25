@@ -3,3 +3,7 @@
     - Select an Ingredient should synch
 2. Create a mock design for view recipe.
 3. Fix the "check user function" 
+
+MARCH 25 TODOs:
+
+1. Make Ingredients table auto-populate.

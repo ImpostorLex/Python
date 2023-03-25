@@ -36,7 +36,7 @@
                         title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
                         <i class="fa-solid fa-table-columns fa-2x" style="color:white;"></i>
                     </a>
-                    <a href="{{ url_for('inventory') }}" class="nav-link py-3 px-2 hovertext" data-hover="Graphs"
+                    <a href="{{ url_for('inventory') }}" class="nav-link py-3 px-2 hovertext" data-hover="Inventory"
                         title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
                         <i class="fa-solid fa-warehouse fa-2x" style="color:white;"></i>
                     </a>
@@ -55,87 +55,111 @@
         </div>
     </nav>
 
-
-    <div class="container">
+    <div class="container-fluid" style="padding: 40px 0 40px 0;">
         <div class="row">
-            <div class="col-md-8 col-12 mx-auto" style="padding-top: 40px;">
-                <div class="container-fixed-width mx-auto">
-                    <h1 class="register-logo">Create A Recipe</h1>
-                    <form method="POST" action="{{ url_for('create') }}">
-                        {{ form.csrf_token }}
-                        <div class="col-md-6">
-                            {{ form.recipe.label}}
-                        </div>
-                        <div class="col-md-6">
-                            {{ form.recipe(size=40, class_="textarea-conf") }}
-                        </div>
-                        <br>
-                        <div class="col-md-6">
-                            {{ form.desc.label }}
-                        </div>
-
-                        <div class="col-md-6">
-                            {{ form.desc(size=70, class_="textarea-conf1") }}
-                        </div>
-                        <br>
-                        <div class="col-md-6">
-                            {{ form.url.label }}
-                        </div>
-                        <div class="col-md-6">
-                            {{ form.url(size=40, class_="textarea-conf") }}
-                        </div>
-                        <br>
-
-                        <div class="col-md-6">
-                            <div class="ingredient-container" id="select-box-container">
-                                {{ form.ingredients.label }}
-                                <br>
-                                {{ form.ingredients(class_="textarea-conf", id="ingredients-select-box") }}
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="register-logo text-center">Create A Recipe</h1>
+                        <form method="POST" action="{{ url_for('create') }}" id="my-form">
+                            {{ form.csrf_token }}
+                            <div class="col-md-12">
+                                {{ form.recipe.label}}
+                                {{ form.recipe(size=40, class_="textarea-conf form-control") }}
                             </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="quantity-container" id="int-select-container">
-                                {{ form.quantity.label }}
-                                {{ form.quantity(class_="textarea-conf", id="quantity-field") }}
-                                {{ form.weight(class_="textarea-conf", id="weight-field") }}
+                            <br>
+                            <div class="col-md-12">
+                                {{ form.desc.label }}
+                                {{ form.desc(size=70, class_="textarea-conf1 form-control") }}
                             </div>
-                        </div>
+
+                            <br>
+                            <div class="col-md-12">
+                                {{ form.url.label }}
+                                {{ form.url(size=40, class_="textarea-conf form-control") }}
+                            </div>
+                            <br>
+                            <div class="col-md-12">
+                                <div class="ingredient-container" id="select-box-container">
+                                    {{ form.ingredients.label }}
+                                    <br>
+                                    {{ form.ingredients(class_="textarea-conf", id="ingredients-field-") }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="quantity-container" id="int-select-container">
+                                    {{ form.quantity.label }}
+                                    {{ form.quantity(class_="textarea-conf", id="quantity-field") }}
+                                    {{ form.weight(class_="textarea-conf", id="weight-field") }}
+                                </div>
+                            </div>
 
 
-                        <div class="text-left">
-                            <button type="button" value="Add" id="my-button"
-                                class="btn btn-outline-danger my-3 input-width1 mx-auto">Add another
-                                Ingredient</button>
-                        </div>
+                            <div class="text-left">
+                                <button type="button" value="Add" id="my-button"
+                                    class="btn btn-outline-danger my-3 mx-auto">Add
+                                    another
+                                    Ingredient</button>
+                            </div>
 
+                            <br>
+                            <div class="col-12">
+                                {{ form.instructions.label }}
+                            </div>
+                            <div class="col-12">
+                                {{ form.instructions(size=70, class_="textarea-conf1 form-control") }}
+                            </div>
+                            {% if error %}
+                            <ul class="my-2 text-danger text-center" style="list-style: none;">
+                                <li>{{ error }}</li>
+                            </ul>
+                            {% endif %}
+                            <br>
+                            <div class="text-left">
+                                <button type="submit" value="Add"
+                                    class="btn btn-outline-danger my-3 mx-auto">Submit</button>
+                            </div>
+                        </form>
 
-                        <br>
-                        <div class="col-12">
-                            {{ form.instructions.label }}
-                        </div>
-                        <div class="col-12">
-                            {{ form.instructions(size=70, class_="textarea-conf1") }}
-                        </div>
-                        {% if error %}
-                        <ul class="my-2 text-danger text-center" style="list-style: none;">
-                            <li>{{ error }}</li>
-                        </ul>
-                        {% endif %}
-                        <br>
-                        <div class="text-left">
-                            <button type="submit" value="Add"
-                                class="btn btn-outline-danger my-3 input-width1 mx-auto">Submit</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
+
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
+    </div>
+
+    <br>
+    <div class="container-fluid" style="background-color:#d93c3f;">
+        <div class="row justify-content-center">
+            <div class="col-md-12 text-center" style="padding-top: 40px;">
+                <h2 class="footer-heading"><a href="#" class="logo" style="color:white">Dimsumz2Go.com</a>
+                </h2>
+                <p class="menu">
+                    <a href="#">Home</a>
+                    <a href="#">Register</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Logout</a>
+                </p>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-md-12 text-center">
+                <p class="copyright">
+                    Copyright &copy;
+                    <script>document.write(new Date().getFullYear());</script> Dimsumz2Go
+                </p>
             </div>
         </div>
     </div>
 
-    <script>
+
+
+    <!-- <script>
         const myButton = document.getElementById("my-button");
-        const selectBox = document.getElementById("ingredients-select-box");
+        const selectBox = document.getElementById("ingredients-field");
         const quantityField = document.getElementById("quantity-field");
         const weightField = document.getElementById("weight-field");
         const selectBoxContainer = document.getElementById("select-box-container");
@@ -181,7 +205,81 @@
             selectBoxCount++;
         });
 
+    </script> -->
+
+
+    <script>
+        const myButton = document.getElementById("my-button");
+        const selectBox = document.getElementById("ingredients-field-");
+        const quantityField = document.getElementById("quantity-field");
+        const weightField = document.getElementById("weight-field");
+        const selectBoxContainer = document.getElementById("select-box-container");
+        const intBoxContainer = document.getElementById("int-select-container");
+
+        const form = document.getElementById("my-form");
+        let selectBoxCount = parseInt(document.querySelectorAll('select[id^="ingredients-field-"]').length) + 1;
+
+        myButton.addEventListener("click", function () {
+            console.log(selectBoxCount);
+            // create a new SelectField
+            const newSelectBox = selectBox.cloneNode(true);
+            newSelectBox.id = `ingredients-field-${selectBoxCount}`;
+            newSelectBox.name = `ingredients-field-${selectBoxCount}`;
+
+            // create a new IntegerField
+            const newQuantityField = quantityField.cloneNode(true);
+            newQuantityField.id = `quantity-field-${selectBoxCount}`;
+            newQuantityField.name = `quantity-field-${selectBoxCount}`;
+
+            // create a new SelectField
+            const newWeightField = weightField.cloneNode(true);
+            newWeightField.id = `weight-field-${selectBoxCount}`;
+            newWeightField.name = `weight-field-${selectBoxCount}`;
+
+            // create a new label for the SelectField
+            const selectBoxLabel = document.createElement("label");
+            selectBoxLabel.textContent = `Select an Ingredient ${selectBoxCount}`;
+
+            // create a new label for the IntegerField
+            const quantityLabel = document.createElement("label");
+            quantityLabel.textContent = `Quantity ${selectBoxCount}`;
+
+            // append the new fields to the form
+            selectBoxContainer.appendChild(selectBoxLabel);
+            selectBoxContainer.appendChild(newSelectBox);
+
+            intBoxContainer.appendChild(quantityLabel);
+            intBoxContainer.appendChild(newQuantityField);
+
+            intBoxContainer.appendChild(newWeightField);
+
+            // create hidden input fields for the new fields and append them to the form
+            const selectBoxHidden = document.createElement("input");
+            selectBoxHidden.type = "hidden";
+            selectBoxHidden.name = `ingredients-field-${selectBoxCount}`;
+            selectBoxHidden.value = newSelectBox.selectedOptions[0].textContent; // Get the selected text
+            form.appendChild(selectBoxHidden);
+
+            const quantityFieldHidden = document.createElement("input");
+            quantityFieldHidden.type = "hidden";
+            quantityFieldHidden.name = `quantity-field-${selectBoxCount}`;
+            quantityFieldHidden.value = newQuantityField.value;
+            form.appendChild(quantityFieldHidden);
+
+            const weightFieldHidden = document.createElement("input");
+            weightFieldHidden.type = "hidden";
+            weightFieldHidden.name = `weight-field-${selectBoxCount}`;
+            weightFieldHidden.value = newWeightField.value;
+            form.appendChild(weightFieldHidden);
+
+
+            // increment the counter
+            selectBoxCount++;
+        });
+
     </script>
+
+
 
 
 

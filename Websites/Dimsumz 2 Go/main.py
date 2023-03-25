@@ -107,6 +107,7 @@ class menuItemIngredient(db.Model):
     list_order = db.Column(db.Integer, nullable=False)
     weight_id = db.Column(db.Integer, db.ForeignKey(
         'weight.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
 
 
 # --------------------------------^ Database Design ^-------------------------------- #
@@ -131,6 +132,8 @@ def check_user(func):
 
 # ---------------------------- FLASK FUNCTIONS ----------------------------
 
+# Create Recipe Form
+
 
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
@@ -138,37 +141,39 @@ def create():
 
     form = CreateForm()
 
-    # TODO: Will be populated by the ingredients table but for now these are the choices
     form.ingredients.choices = []
 
     all_ingredients = Ingredient.query.all()
 
     for ingredient in all_ingredients:
 
-        key_pair_value = (ingredient.cost, ingredient.name)
-        form.ingredients.choices.append(key_pair_value)
+        # Extract Ingredients
+        form.ingredients.choices.append(ingredient.name)
 
     if request.method == 'POST' and form.validate_on_submit():
 
-        cost = []
+        cost = set()
         quantity = []
         weight = []
-
         ingredients_name = []
-        # Get the key-pair value for the Ingredients field but only the value for other fieds
+
+        for key, value in request.form.items():
+            print(f"key: {key}, value: {value}")
+
+       # Get the key-pair value for the Ingredients field but only the value for other fieds
         for key, value in request.form.items():
             if key.startswith('ingredients-field-') or key == 'ingredients':
-                cost.append(float(value))
+                # cost.add(float(value))
+                ingredients_name.append(value)
             elif key.startswith('quantity-field-') or key == 'quantity':
                 quantity.append(value)
             elif key.startswith('weight-field-') or key == 'weight':
                 weight.append(value)
 
-            choice = next(
-                (c for c in form.ingredients.choices if c[0] == value), None)
-            if choice is not None:
-                # Append the stored value to the ingredients list
-                ingredients_name.append(choice[1])
+        # Query the cost for each Ingredients added
+        for i, q in zip(ingredients_name, quantity):
+            get_ingredients_cost = Ingredient.query.filter_by(name=i).first()
+            cost.add(float(get_ingredients_cost.cost) * float(q))
 
         # First insert a row into the menuItem table
         recipe = request.form.get('recipe')
@@ -189,6 +194,20 @@ def create():
                       instructions=instructions)
         db.session.add(image)
         db.session.commit()
+
+        ctr = 1
+        for i, w, q in zip(ingredients_name, weight, quantity):
+
+            get_id_of_ingredient = Ingredient.query.filter_by(name=i).first()
+            get_id_of_weight = Weight.query.filter_by(name=w).first()
+
+            # Insert menu_id recently created and other details such as list_order and weight_id
+            insert_ingredient = menuItemIngredient(
+                menu_item_id=menu_id, ingredient_id=get_id_of_ingredient.id, list_order=ctr, weight_id=get_id_of_weight.id, quantity=q)
+
+            ctr += 1
+            db.session.add(insert_ingredient)
+            db.session.commit()
 
         return redirect(url_for('recipes'))
 
@@ -232,6 +251,7 @@ def index():
     return render_template("login.html", form=forms)
 
 
+# Create Ingredient Form
 @app.route('/create-ingredient', methods=['GET', 'POST'])
 def addIngredients():
 
@@ -275,7 +295,16 @@ def home():
 @check_user
 def inventory():
 
-    return render_template('ingredient.html')
+    get_ingredients = Ingredient.query.all()
+
+    weight_list = []
+
+    for i in get_ingredients:
+
+        weight_cat = Weight.query.filter_by(id=i.weight_id).first()
+        weight_list.append(weight_cat.name)
+
+    return render_template('ingredient.html', ingre=get_ingredients, zip=zip, weight_list=weight_list)
 
 
 @app.route('/item/<int:num>', methods=['GET', 'POST'])
@@ -284,8 +313,22 @@ def inventory():
 def item(num):
 
     img = Image.query.filter_by(id=num).first()
+    menu_item = menuItem.query.filter_by(id=num).first()
+    get_instructions = menuItemIngredient.query.filter_by(
+        menu_item_id=num).all()
 
-    return f"{num} {img}"
+    ic(get_instructions)
+
+    ingredient_list = []
+    for ingre in get_instructions:
+
+        weight = Weight.query.filter_by(id=ingre.weight_id).first()
+        ingredient = Ingredient.query.filter_by(id=ingre.ingredient_id).first()
+
+        ingredient_list.append(
+            f"{ingre.list_order} {ingredient.name} x{ingre.quantity} {weight.name}")
+
+    return render_template('viewRecipe.html', img=img, menu=menu_item, list=ingredient_list)
 
 
 @app.route("/logout", methods=['GET', 'POST'])

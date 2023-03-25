@@ -56,6 +56,8 @@ hr {
 
 }
 
+
+
 .recipe-img-hover:hover {
     filter: brightness(0.5) blur(0.5px);
 }
@@ -86,6 +88,16 @@ hr {
     width: 100%;
     object-fit: cover;
     filter: brightness(0.5) blur(0.5px);
+}
+
+.item-img {
+    margin: 0;
+    padding: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    filter: brightness(0.5) blur(0.5);
 }
 
 .is_disabled {
@@ -146,6 +158,12 @@ hr {
     }
 }
 
+.fixed-footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+
+}
 
 
 
@@ -260,4 +278,9 @@ hr {
 .fa-gradient {
     background: -webkit-linear-gradient(#F9A7B0, #FFD700);
     -webkit-text-fill-color: transparent;
+}
+
+.menu a {
+    margin-right: 10px;
+    color: white;
 }

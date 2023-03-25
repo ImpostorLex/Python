@@ -18,31 +18,6 @@
 
 <body>
 
-    <!-- navbar -->
-    <!-- <nav class="navbar bg-body-tertiary navbar-expand-lg fixed-top py-0">
-        <div class="container-fluid" style="background-color: #f55052;">
-
-            <a class="navbar-brand navbar-char" href="{{ url_for('dashboard') }}"
-                style="font-size: 40px !important; padding-left: 20px;">
-                Dimsumz 2 Go
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="navbar-nav ms-auto">
-                    <a class="nav-link navbar-char mx-3" href="#">Home</a>
-                    <a class="nav-link navbar-char mx-3" href="#">Features</a>
-                    <a class="nav-link navbar-char mx-3" href="#">Pricing</a>
-                    <a class="nav-link navbar-char mx-3">Disabled</a>
-                </div>
-            </div>
-    </nav> -->
-
-
     <div class="position-relative">
         <img src="/static/images/dimsum-dash-bg.jpg" alt="Dimsum dashboard" class="img-dashboard">
         <div
@@ -298,7 +273,8 @@
                 </div>
 
                 <br>
-                <div class="container">
+
+                <!-- <div class="container-fluid">
                     <footer class="py-3 my-4">
                         <ul class="nav justify-content-center border-bottom pb-3 mb-3">
                             <li class="nav-item"><a href="{{ url_for('dashboard') }}"
@@ -306,14 +282,36 @@
                             </li>
                             <li class="nav-item"><a href="{{ url_for('register') }}"
                                     class="nav-link px-2 text-muted">Register</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Pricing</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">FAQs</a></li>
+                            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Support</a></li>
                             <li class="nav-item"><a href="{{ url_for('logout') }}"
                                     class="nav-link px-2 text-muted">Logout</a>
                             </li>
                         </ul>
                         <p class="text-center text-muted">© 2023 Dimsumz 2 Go, Inc</p>
                     </footer>
+                </div> -->
+                <br>
+                <div class="container-fluid" style="background-color: #d93c3f;">
+                    <div class="row justify-content-center">
+                        <div class="col-md-12 text-center" style="padding-top: 40px;">
+                            <h2 class="footer-heading"><a href="#" class="logo" style="color:white">Dimsumz2Go.com</a>
+                            </h2>
+                            <p class="menu">
+                                <a href="#">Home</a>
+                                <a href="#">Register</a>
+                                <a href="#">Contact</a>
+                                <a href="#">Logout</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class="col-md-12 text-center">
+                            <p class="copyright">
+                                Copyright &copy;
+                                <script>document.write(new Date().getFullYear());</script> Dimsumz2Go
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
 
