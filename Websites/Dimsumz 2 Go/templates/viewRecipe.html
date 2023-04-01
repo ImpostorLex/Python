@@ -81,7 +81,7 @@
                 <p style="font-size:1.75rem;">This recipe requires the following:</p>
                 <!-- List to be populated by Ingredients required. -->
 
-                <ul style="font-size:1.25rem;">
+                <ul style="font-size:1.25rem; list-style: none;">
                     {% for item in list %}
                     <li>{{ item }}</li>
                     {% endfor %}
@@ -90,7 +90,7 @@
                 <p style="font-size:1.50rem;">{{ img.instructions }}
                 </p>
 
-                <a href="" class=" text-right">Edit</a>
+                <a href="{{ url_for('edit', num=num ) }}" class=" text-right">Edit</a>
                 <a href="" class="text-right">Delete</a>
 
             </div>

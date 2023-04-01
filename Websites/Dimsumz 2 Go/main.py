@@ -226,7 +226,109 @@ def dashboard():
     return render_template("dashboard.html", user=user_type)
 
 
-@app.route('/', methods=['POST', 'GET'])
+# TODO: Check Users
+@app.route('/edit/<int:num>', methods=['GET', 'POST'])
+@login_required
+def edit(num):
+
+    form = CreateForm()
+
+    form.ingredients.choices = []
+
+    all_ingredients = Ingredient.query.all()
+
+    # Set pre-set value using the to be edit Recipe
+
+    img = Image.query.filter_by(id=num).first()
+    form.url.data = img.path
+    form.instructions.data = img.instructions
+
+    menu = menuItem.query.filter_by(id=num).first()
+    form.recipe.data = menu.name
+    form.desc.data = menu.desc
+
+    for ingredient in all_ingredients:
+
+        # Extract Ingredients
+        form.ingredients.choices.append(ingredient.name)
+
+    get_ingredients = menuItemIngredient.query.filter_by(
+        menu_item_id=menu.id).all()
+
+    if request.method == 'POST' and form.validate_on_submit():
+
+        cost = set()
+        quantity = []
+        weight = []
+        ingredients_name = []
+
+       # Get the key-pair value for the Ingredients field but only the value for other fieds
+        for key, value in request.form.items():
+            if key.startswith('ingredients-field-') or key == 'ingredients':
+                # cost.add(float(value))
+                ingredients_name.append(value)
+            elif key.startswith('quantity-field-') or key == 'quantity':
+                quantity.append(value)
+            elif key.startswith('weight-field-') or key == 'weight':
+                weight.append(value)
+
+        # Query the cost for each Ingredients added
+        for i, q in zip(ingredients_name, quantity):
+            get_ingredients_cost = Ingredient.query.filter_by(name=i).first()
+            cost.add(float(get_ingredients_cost.cost) * float(q))
+
+        recipe = request.form.get('recipe')
+        desc = request.form.get('desc')
+        cost = sum(cost)
+
+        # Query the row to be updated, in this case the menuItem table first
+        menu = menuItem.query.filter_by(id=num).first()
+        menu.recipe = recipe
+        menu.desc = desc
+        menu.cost = cost
+
+        # Second Query the Image table
+        image = Image.query.filter_by(menu_item_id=num).first()
+        image.path = request.form.get('url')
+        image.instructions = request.form.get('instructions')
+
+        menu_item_ingredients = menuItemIngredient.query.filter_by(
+            menu_item_id=num).all()
+
+        # Query all the ids related to the TO BE edited recipe.
+        ids = [int(ingre.id) for ingre in menu_item_ingredients]
+
+        # Query all the IDs of weight and ingredients
+        ingredient_ids = []
+        weight_ids = []
+        for ingre, wei in zip(ingredients_name, weight):
+
+            query_ingredient = Ingredient.query.filter_by(name=ingre).first()
+            ingredient_ids.append(query_ingredient.id)
+
+            query_weight = Weight.query.filter_by(name=wei).first()
+            weight_ids.append(query_weight.id)
+
+        # Update ingredient_id and weight_id of menuItemIngredients accordingly to the ids queried.
+        for id, i2, w2 in zip(ids, ingredient_ids, weight_ids):
+
+            row = menuItemIngredient.query.filter_by(id=id).first()
+
+            row.ingredient_id = i2
+            row.weight_id = w2
+
+        return f"Something {ids}"
+
+        # ctr += 1
+        # db.session.add(insert_ingredient)
+        # db.session.commit()
+
+        return f"{recipe}, {desc}, {cost}"
+
+    return render_template('editRecipe.html', form=form, list_length=len(get_ingredients), num=num)
+
+
+@ app.route('/', methods=['POST', 'GET'])
 def index():
 
     forms = LoginForm()
@@ -252,7 +354,7 @@ def index():
 
 
 # Create Ingredient Form
-@app.route('/create-ingredient', methods=['GET', 'POST'])
+@ app.route('/create-ingredient', methods=['GET', 'POST'])
 def addIngredients():
 
     form = IngredientForm()
@@ -326,9 +428,9 @@ def item(num):
         ingredient = Ingredient.query.filter_by(id=ingre.ingredient_id).first()
 
         ingredient_list.append(
-            f"{ingre.list_order} {ingredient.name} x{ingre.quantity} {weight.name}")
+            f"{ingre.list_order}) {ingredient.name} x{ingre.quantity} {weight.name}")
 
-    return render_template('viewRecipe.html', img=img, menu=menu_item, list=ingredient_list)
+    return render_template('viewRecipe.html', img=img, menu=menu_item, list=ingredient_list, num=num)
 
 
 @app.route("/logout", methods=['GET', 'POST'])

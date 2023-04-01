@@ -7,3 +7,9 @@
 MARCH 25 TODOs:
 
 1. Make Ingredients table auto-populate.
+
+April 1 TODOs:
+
+1. Update and Delete Recipes and Ingredients
+2. Re-Stock Ingredients
+
