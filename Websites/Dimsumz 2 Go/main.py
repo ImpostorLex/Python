@@ -312,6 +312,8 @@ def edit(num):
         # Update ingredient_id and weight_id of menuItemIngredients accordingly to the ids queried.
         for id, i2, w2 in zip(ids, ingredient_ids, weight_ids):
 
+            ctr += 1
+
             row = menuItemIngredient.query.filter_by(id=id).first()
 
             row.ingredient_id = i2
@@ -322,8 +324,6 @@ def edit(num):
         # ctr += 1
         # db.session.add(insert_ingredient)
         # db.session.commit()
-
-        return f"{recipe}, {desc}, {cost}"
 
     return render_template('editRecipe.html', form=form, list_length=len(get_ingredients), num=num)
 
