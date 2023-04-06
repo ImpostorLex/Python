@@ -130,7 +130,7 @@
                             {% endif %}
                             <br>
                             <div class="text-left">
-                                <button type="submit" value="Add"
+                                <button type="submit" id="submit-button" name="submit-button"
                                     class="btn btn-outline-danger my-3 mx-auto">Submit</button>
                             </div>
                         </form>
@@ -168,6 +168,7 @@
     </div>
 
     <script>
+
         const myButton = document.getElementById("my-button");
         const selectBox = document.getElementById("ingredients-field-");
         const quantityField = document.getElementById("quantity-field");
@@ -179,17 +180,12 @@
         let selectBoxCount = parseInt(document.querySelectorAll('select[id^="ingredients-field-"]').length) + 1;
         let autoBoxCount = 1;
 
-
-        var resetButton = document.getElementById("reset-button");
-        resetButton.addEventListener("click", function () {
-            document.getElementById("reset-button").value = "PUSHED";
-            document.getElementById("my-form").submit();
-        });
+        var submitButton = document.getElementById("submit-button");
+        submitButton.value = "not-pushed"
 
 
+        {% if list_length == 0 %}
 
-        {% if request.form['reset-button'] == 'PUSHED' %}
-        console.log("Button pushed.")
         myButton.addEventListener("click", function () {
             console.log(selectBoxCount);
             // create a new SelectField
@@ -246,11 +242,11 @@
 
             // increment the counter
             selectBoxCount++;
-            myResetButton.value = "not-pushed"
-            console.log(`Am inside for loop triggered 2 ${selectBoxCount} and ${myResetButton.value}`)
+            submitButton.value = "not-pushed"
+            console.log(`Manual pushed SelectBoxCount: ${selectBoxCount}`);
+
         });
         {% elif list_length != 0 %}
-        console.log("Second If")
         myButton.addEventListener("click", function () {
             console.log(selectBoxCount);
             // create a new SelectField
@@ -314,10 +310,6 @@
             {% set decrement = 1 %}
             {% set list_length = list_length - decrement %}
 
-            console.log(`Am inside for loop triggered ${selectBoxCount}`);
-            console.log("Below is list length");
-            console.log({{ list_length }});
-
         });
 
         for (var i = 0; i < {{ list_length }}; i++) {
@@ -336,45 +328,64 @@
             // Set list_length back to zero so it wont trigger the second if
             {% set list_length = 0 %}
 
-            const originalSelectBoxCount = selectBoxCount;
-            console.log(`value of origSelect ${originalSelectBoxCount}`);
+            let originalSelectBoxCount = selectBoxCount;
+
+
             for (var i = 1; i < originalSelectBoxCount; i++) {
-                console.log(`so mature ${originalSelectBoxCount} and value of i is ${i}`);
+                console.log(`originialSelectBoxCount value: ${originalSelectBoxCount} and value of i is ${i}`);
 
                 var dynamicIngredients = document.getElementById(`ingredients-field-${i}`);
                 var dynamicQuantity = document.getElementById(`quantity-field-${i}`);
                 var dynamicWeight = document.getElementById(`weight-field-${i}`);
 
-                // Remove the labels
-                var selectBoxLabelToRemove = document.getElementById(`selectBoxLabel-${i}`);
-                var quantityLabelToRemove = document.getElementById(`quantityLabel-${i}`);
+                try {
+                    // Remove the labels
+                    var selectBoxLabelToRemove = document.getElementById(`selectBoxLabel-${i}`);
+                    var quantityLabelToRemove = document.getElementById(`quantityLabel-${i}`);
 
-                selectBoxLabelToRemove.parentNode.removeChild(selectBoxLabelToRemove);
-                quantityLabelToRemove.parentNode.removeChild(quantityLabelToRemove);
+                    selectBoxLabelToRemove.parentNode.removeChild(selectBoxLabelToRemove);
+                    quantityLabelToRemove.parentNode.removeChild(quantityLabelToRemove);
 
-                if (selectBoxLabelToRemove) {
-                    selectBoxLabelToRemove.remove();
-                }
+                    if (selectBoxLabelToRemove) {
+                        selectBoxLabelToRemove.remove();
+                    }
 
-                if (quantityLabelToRemove) {
-                    quantityLabelToRemove.remove();
+                    if (quantityLabelToRemove) {
+                        quantityLabelToRemove.remove();
+                    }
+                } catch (error) {
+                    console.log(`Error: ${error}`);
                 }
 
                 if (dynamicIngredients) {
+                    dynamicIngredients.name = "";
                     dynamicIngredients.remove();
+
                 }
 
                 if (dynamicQuantity) {
+                    dynamicQuantity.name = "";
                     dynamicQuantity.remove();
+
                 }
 
                 if (dynamicWeight) {
+                    dynamicWeight.name = "";
                     dynamicWeight.remove();
+
                 }
             }
+            // Reset the value of the counter
+            selectBoxCount = parseInt(document.querySelectorAll('select[id^="ingredients-field-"]').length) + 1;
+            submitButton.value = "pushed";
+
         });
 
+
     </script>
+
+
+
 
 
 

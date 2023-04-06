@@ -7,6 +7,7 @@ from form import LoginForm, RegistrationForm, CreateForm, IngredientForm
 from time import sleep
 from functools import wraps
 from sqlalchemy import Date
+import ast
 
 
 app = Flask(__name__)
@@ -110,7 +111,7 @@ class menuItemIngredient(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
 
 
-# --------------------------------^ Database Design ^-------------------------------- #
+# -------------------------------- User Defined Functions -------------------------------- #
 db.create_all()
 
 
@@ -129,6 +130,20 @@ def check_user(func):
         else:
             return redirect(url_for('unauthorized'))
     return wrapper
+
+
+def ingredientsCost(ingredients, quantity):
+
+    cost = set()
+
+    # Query the cost for each Ingredients added
+    for i, q in zip(ingredients, quantity):
+        get_ingredients_cost = Ingredient.query.filter_by(name=i).first()
+        cost.add(float(get_ingredients_cost.cost) * float(q))
+        ic(cost)
+
+    return sum(cost)
+
 
 # ---------------------------- FLASK FUNCTIONS ----------------------------
 
@@ -257,73 +272,91 @@ def edit(num):
 
     if request.method == 'POST' and form.validate_on_submit():
 
-        cost = set()
+        button_value = request.form.get('submit-button')
         quantity = []
         weight = []
         ingredients_name = []
 
-       # Get the key-pair value for the Ingredients field but only the value for other fieds
-        for key, value in request.form.items():
-            if key.startswith('ingredients-field-') or key == 'ingredients':
-                # cost.add(float(value))
-                ingredients_name.append(value)
-            elif key.startswith('quantity-field-') or key == 'quantity':
-                quantity.append(value)
-            elif key.startswith('weight-field-') or key == 'weight':
-                weight.append(value)
+        # Due to the deleted fields are still being passed in the POST request get only the first form field
+        if button_value == 'pushed':
 
-        # Query the cost for each Ingredients added
-        for i, q in zip(ingredients_name, quantity):
-            get_ingredients_cost = Ingredient.query.filter_by(name=i).first()
-            cost.add(float(get_ingredients_cost.cost) * float(q))
+            for key, value in request.form.items():
 
-        recipe = request.form.get('recipe')
-        desc = request.form.get('desc')
-        cost = sum(cost)
+                if len(ingredients_name) == 1 and len(weight) == 1 and len(quantity) == 1:
+                    ic(f"{ingredients_name}, {quantity}, {weight}")
+                    break
 
-        # Query the row to be updated, in this case the menuItem table first
-        menu = menuItem.query.filter_by(id=num).first()
-        menu.recipe = recipe
-        menu.desc = desc
-        menu.cost = cost
+                if key.startswith('ingredients-field-') or key == 'ingredients':
+                    # cost.add(float(value))
+                    ingredients_name.append(value)
+                elif key.startswith('quantity-field-') or key == 'quantity':
+                    quantity.append(value)
+                elif key.startswith('weight-field-') or key == 'weight':
+                    weight.append(value)
 
-        # Second Query the Image table
-        image = Image.query.filter_by(menu_item_id=num).first()
-        image.path = request.form.get('url')
-        image.instructions = request.form.get('instructions')
+            cost = ingredientsCost(ingredients_name, quantity)
+            ic(cost)
 
-        menu_item_ingredients = menuItemIngredient.query.filter_by(
-            menu_item_id=num).all()
+        else:
 
-        # Query all the ids related to the TO BE edited recipe.
-        ids = [int(ingre.id) for ingre in menu_item_ingredients]
+            # Get the key-pair value for the Ingredients field but only the value for other fieds
+            for key, value in request.form.items():
+                if key.startswith('ingredients-field-') or key == 'ingredients':
+                    # cost.add(float(value))
+                    ingredients_name.append(value)
+                elif key.startswith('quantity-field-') or key == 'quantity':
+                    quantity.append(value)
+                elif key.startswith('weight-field-') or key == 'weight':
+                    weight.append(value)
 
-        # Query all the IDs of weight and ingredients
-        ingredient_ids = []
-        weight_ids = []
-        for ingre, wei in zip(ingredients_name, weight):
+            ic(f"{ingredients_name}, {quantity}, {weight}")
 
-            query_ingredient = Ingredient.query.filter_by(name=ingre).first()
-            ingredient_ids.append(query_ingredient.id)
+            cost = ingredientsCost(ingredients_name, quantity)
+            ic(cost)
 
-            query_weight = Weight.query.filter_by(name=wei).first()
-            weight_ids.append(query_weight.id)
+        # recipe = request.form.get('recipe')
+        # desc = request.form.get('desc')
+        # cost = sum(cost)
 
-        # Update ingredient_id and weight_id of menuItemIngredients accordingly to the ids queried.
-        for id, i2, w2 in zip(ids, ingredient_ids, weight_ids):
+        # # Query the row to be updated, in this case the menuItem table first
+        # menu = menuItem.query.filter_by(id=num).first()
+        # menu.recipe = recipe
+        # menu.desc = desc
+        # menu.cost = cost
 
-            ctr += 1
+        # # Second Query the Image table
+        # image = Image.query.filter_by(menu_item_id=num).first()
+        # image.path = request.form.get('url')
+        # image.instructions = request.form.get('instructions')
 
-            row = menuItemIngredient.query.filter_by(id=id).first()
+        # menu_item_ingredients = menuItemIngredient.query.filter_by(
+        #     menu_item_id=num).all()
 
-            row.ingredient_id = i2
-            row.weight_id = w2
+        # # Query all the ids related to the TO BE edited recipe.
+        # ids = [int(ingre.id) for ingre in menu_item_ingredients]
 
-        return f"Something {ids}"
+        # # Query all the IDs of weight and ingredients
+        # ingredient_ids = []
+        # weight_ids = []
+        # for ingre, wei in zip(ingredients_name, weight):
 
-        # ctr += 1
-        # db.session.add(insert_ingredient)
-        # db.session.commit()
+        #     query_ingredient = Ingredient.query.filter_by(name=ingre).first()
+        #     ingredient_ids.append(query_ingredient.id)
+
+        #     query_weight = Weight.query.filter_by(name=wei).first()
+        #     weight_ids.append(query_weight.id)
+
+        # # Update ingredient_id and weight_id of menuItemIngredients accordingly to the ids queried.
+        # for id, i2, w2 in zip(ids, ingredient_ids, weight_ids):
+
+        #     ctr += 1
+
+        #     row = menuItemIngredient.query.filter_by(id=id).first()
+
+        #     row.ingredient_id = i2
+        #     row.weight_id = w2
+
+        return f"Something"
 
     return render_template('editRecipe.html', form=form, list_length=len(get_ingredients), num=num)
 
@@ -379,22 +412,22 @@ def addIngredients():
     return render_template("ingredientForm.html", form=form)
 
 
-@app.route('/graphs', methods=['GET', 'POST'])
-@check_user
+@ app.route('/graphs', methods=['GET', 'POST'])
+@ check_user
 def graphs():
 
     return "For Accountant"
 
 
-@app.route('/home', methods=['GET', 'POST'])
+@ app.route('/home', methods=['GET', 'POST'])
 def home():
 
     return "<h1>Simple static website for users</h1>"
 
 
-@app.route('/inventory', methods=['GET', 'POST'])
-@login_required
-@check_user
+@ app.route('/inventory', methods=['GET', 'POST'])
+@ login_required
+@ check_user
 def inventory():
 
     get_ingredients = Ingredient.query.all()
@@ -409,8 +442,8 @@ def inventory():
     return render_template('ingredient.html', ingre=get_ingredients, zip=zip, weight_list=weight_list)
 
 
-@app.route('/item/<int:num>', methods=['GET', 'POST'])
-@login_required
+@ app.route('/item/<int:num>', methods=['GET', 'POST'])
+@ login_required
 # @check_user TODO find a way to implement this:
 def item(num):
 
@@ -433,14 +466,14 @@ def item(num):
     return render_template('viewRecipe.html', img=img, menu=menu_item, list=ingredient_list, num=num)
 
 
-@app.route("/logout", methods=['GET', 'POST'])
+@ app.route("/logout", methods=['GET', 'POST'])
 def logout():
     logout_user()
 
     return redirect(url_for('index'))
 
 
-@app.route('/register', methods=['POST', 'GET'])
+@ app.route('/register', methods=['POST', 'GET'])
 def register():
     # TODO create a what role for register to be automatically populated
     form = RegistrationForm()
@@ -491,9 +524,9 @@ def register():
     return render_template("register.html", form=form)
 
 
-@app.route('/recipes', methods=['GET', 'POST'])
-@login_required
-@check_user
+@ app.route('/recipes', methods=['GET', 'POST'])
+@ login_required
+@ check_user
 def recipes():
 
     menus = menuItem.query.all()
@@ -502,13 +535,13 @@ def recipes():
     return render_template("recipes.html", menu=menus, img=imgs, zip=zip)
 
 
-@app.route("/unauthorized", methods=['GET', 'POST'])
+@ app.route("/unauthorized", methods=['GET', 'POST'])
 def unauthorized():
 
     return render_template("unauthorized.html")
 
 
-@login_manager.user_loader
+@ login_manager.user_loader
 def load_user(user_id):
 
     return Users.query.get(int(user_id))
