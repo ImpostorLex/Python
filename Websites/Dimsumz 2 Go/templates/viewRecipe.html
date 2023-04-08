@@ -91,7 +91,8 @@
                 </p>
 
                 <a href="{{ url_for('edit', num=num ) }}" class=" text-right">Edit</a>
-                <a data-bs-toggle="modal" data-bs-target="#popup" id='delete-btn' class="text-right">Delete</a>
+                <a data-bs-toggle="modal" style="cursor: pointer;" data-bs-target="#popup" id='delete-btn'
+                    class="text-right">Delete</a>
 
             </div>
             <div class="col-md-3"></div>
@@ -99,7 +100,7 @@
     </div>
 
     <div class="modal fade" id="popup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalLabel">&#9888; Warning!</h1>

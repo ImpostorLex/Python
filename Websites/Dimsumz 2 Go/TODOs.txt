@@ -10,6 +10,11 @@ MARCH 25 TODOs:
 
 April 1 TODOs:
 
-1. Update and Delete Recipes and Ingredients
-2. Re-Stock Ingredients
+1. Update and Delete Recipes / April 6
+
+April 9 TODOs:
+
+1. Update and Delete Ingredients
+2. 
+
 

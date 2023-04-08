@@ -428,7 +428,22 @@ def edit(num):
     return render_template('editRecipe.html', form=form, list_length=len(get_ingredients), num=num)
 
 
-@ app.route('/', methods=['POST', 'GET'])
+@app.route("/editIngredient/<string:name>", methods=['POST', 'GET'])
+@login_required
+def editIngredient(name):
+
+    form = IngredientForm()
+
+    # Query the to be edited
+
+    if request.method == 'POST' and form.validate_on_submit():
+
+        return "Yehey"
+
+    return render_template("editIngredient.html", form=form)
+
+
+@app.route('/', methods=['POST', 'GET'])
 def index():
 
     forms = LoginForm()

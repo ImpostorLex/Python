@@ -78,6 +78,7 @@
                             <th scope="col">Stocks</th>
                             <th scope="col">Price</th>
                             <th scope="col ">Weight</th>
+                            <th scope="col">Mode</th>
                         </tr>
                     </thead>
 
@@ -85,11 +86,15 @@
 
                         {% for i,w in zip(ingre,weight_list) %}
                         <tr>
-                            <th scope="row">{{ loop.index0 + 1 }}</th>
+                            <th scope="row">{{ loop.index0 + 1}}</th>
                             <td>{{ i.name }}</td>
                             <td>{{ i.quantity }}</td>
                             <td>{{ i.cost }}</td>
                             <td>{{ w }}</td>
+                            <td><a class="hovertext" data-hover="Edit" data-bs-original-title="Edit"
+                                    href="{{ url_for('editIngredient', name=i.name )}}">✏️&nbsp;&nbsp;&nbsp;</a><a
+                                    href="" class="hovertext" data-hover="Delete">🗑️</a></td>
+
                         </tr>
                         {% endfor %}
 
@@ -100,9 +105,12 @@
     </div>
 
 
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous">
         </script>
+
 </body>
 
 </html>

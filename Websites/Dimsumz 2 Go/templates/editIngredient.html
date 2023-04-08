@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dimsumz 2 Go</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Golos+Text&family=Open+Sans:ital,wght@1,800&family=Permanent+Marker&family=Poppins:wght@300&display=swap"
+        rel="stylesheet">
+    <script src="https://kit.fontawesome.com/b5d820a994.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+
+    <nav class="navbar navbar-expand-lg sticky-top" style="background-color: #f55052;">
+        <div class=" container-fluid">
+            <a href="{{ url_for('home') }}" class="nav-link py-3 px-2 hovertext" data-hover="Home" title=""
+                data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
+                <i class="fa-solid fa-2x" style="color:white;">Dimsumz 2 Go</i>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a href="{{ url_for('dashboard') }}" class="nav-link py-3 px-2 hovertext" data-hover="Dashboard"
+                        title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-table-columns fa-2x" style="color:white;"></i>
+                    </a>
+                    <a href="{{ url_for('inventory') }}" class="nav-link py-3 px-2 hovertext" data-hover="Graphs"
+                        title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-warehouse fa-2x" style="color:white;"></i>
+                    </a>
+
+                    <a href="{{ url_for('graphs') }}" class="nav-link py-3 px-2 hovertext" data-hover="Graphs" title=""
+                        data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-chart-simple fa-2x" style="color:white;"></i>
+                    </a>
+
+                    <a href="{{ url_for('logout') }}" class="nav-link py-3 px-2 hovertext" data-hover="Sign-out"
+                        title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-right-from-bracket fa-2x" style="color:white;"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="padding-top: 40px;">
+        <div class="row">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <div class="card mx-auto">
+                    <div class="card-body">
+                        <h1 class="register-logo text-center">Edit A Recipe</h1>
+
+                        <button
+                            data-hover="By default this is turn on, this locks all other forms except the quantity field"
+                            type="button" id="checker" style="color:white" class="hovertext btn">Lock
+                            on</button>
+                        <br>
+                        <br>
+
+                        <form method="POST" action="{{ url_for('addIngredients') }}">
+                            {{ form.csrf_token }}
+                            <div class="form-group">
+                                {{ form.name.label(class_='text-right') }}
+                                {{ form.name(class_='form-control', id="recipe") }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.stock.label(class_='text-right') }}
+                                {{ form.stock(class_='form-control') }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.price.label(class_='text-right') }}
+                                {{ form.price(class_='form-control', id="price") }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.weight.label(class_='text-right') }}
+                                {{ form.weight(class_='form-control', id='ingredients-select-box') }}
+                            </div>
+                            {% if error %}
+                            <ul class="my-2 text-danger text-center" style="list-style: none;">
+                                <li>{{ error }}</li>
+                            </ul>
+                            {% endif %}
+                            <div class="text-center">
+                                <button id="ayeSubmit" type="submit" value="Add"
+                                    class="btn btn-outline-danger my-3  mx-auto">Create</button>
+                            </div>
+                            <p id="fieldError"></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
+    </div>
+
+    <br>
+    <div class="container-fluid fixed-footer" style="background-color: #c3282c;">
+        <div class="row justify-content-center">
+            <div class="col-md-12 text-center" style="padding-top: 40px;">
+                <h2 class="footer-heading"><a href="#" class="logo" style="color:white">Dimsumz2Go.com</a>
+                </h2>
+                <p class="menu">
+                    <a href="#">Home</a>
+                    <a href="#">Register</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Logout</a>
+                </p>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-md-12 text-center">
+                <p class="copyright">
+                    Copyright &copy;
+                    <script>document.write(new Date().getFullYear());</script> Dimsumz2Go
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var myButton = document.getElementById("checker");
+        myButton.classList.add("btn-danger");
+        myButton.innerHTML = "Lock On";
+
+        document.getElementById("recipe").disabled = true;
+        document.getElementById("price").disabled = true;
+        document.getElementById("ingredients-select-box").disabled = true;
+    </script>
+
+    <script>
+        var myButton = document.getElementById("checker");
+        myButton.addEventListener("click", function () {
+            if (!myButton.classList.contains("btn-primary")) {
+                myButton.classList.remove("btn-danger");
+                myButton.classList.add("btn-primary");
+                myButton.innerHTML = "Lock Off";
+
+                document.getElementById("recipe").disabled = false;
+                document.getElementById("price").disabled = false;
+                document.getElementById("ingredients-select-box").disabled = false;
+            }
+            else if (!myButton.classList.contains("btn-danger")) {
+                myButton.classList.remove("btn-primary");
+                myButton.classList.add("btn-danger");
+                myButton.innerHTML = "Lock On";
+
+                document.getElementById("recipe").disabled = true;
+                document.getElementById("price").disabled = true;
+                document.getElementById("ingredients-select-box").disabled = true;
+            }
+
+        });
+    </script>
+
+    <script>
+
+        // Get references to the locked fields
+        const recipeField = document.getElementById('recipe');
+        const priceField = document.getElementById('price');
+        const weightField = document.getElementById('ingredients-select-box');
+
+
+        // Get a reference to the unlock button
+        const unlockButton = document.getElementById('ayeSubmit');
+
+        // Add a click event listener to the unlock button
+        unlockButton.addEventListener('click', function () {
+            // Remove the disabled attribute from the locked fields
+            document.getElementById("ingredients-select-box").disabled = false;
+            document.getElementById("recipe").disabled = false;
+            document.getElementById("price").disabled = false;
+        });
+
+        // Get a reference to the form and error paragraph
+        const form = document.querySelector('form');
+        var errorLabel = document.getElementById('fieldError');
+
+        // Add a submit event listener to the form
+        form.addEventListener('submit', function (event) {
+            // If the recipe field is still disabled, prevent the form from submitting
+            if (recipeField.disabled) {
+                event.preventDefault();
+                errorLabel.style.color = "red";
+                errorLabel.style.textDecorationThickness = "900";
+                errorLabel.innerHTML = "Please fill out the empty fields."
+                myButton.click();
+
+
+            }
+        });
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous">
+        </script>
+</body>
+
+</html>
