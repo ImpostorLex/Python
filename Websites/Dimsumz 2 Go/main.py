@@ -434,13 +434,42 @@ def editIngredient(name):
 
     form = IngredientForm()
 
-    # Query the to be edited
+    # Query the Ingredient
+    ingredient = Ingredient.query.filter_by(name=name).first()
 
+    form.name.data = ingredient.name
+    form.stock.data = ingredient.quantity
+    form.price.data = ingredient.cost
+
+    # Query the weight name using the ID
+    weight = Weight.query.filter_by(id=ingredient.id).first()
+    form.weight.data = weight.name
+
+    # Query the to be edited
     if request.method == 'POST' and form.validate_on_submit():
 
-        return "Yehey"
+        if request.form.get('stock') == 0:
 
-    return render_template("editIngredient.html", form=form)
+            error = "Re stocking of ingredients cannot be zero"
+            return render_template("editIngredient.html", form=form, name=name, error=error)
+        else:
+
+            _ingredient = Ingredient.query.filter_by(name=name).first()
+
+            _ingredient.name = request.form.get('name')
+            _ingredient.quantity = request.form.get('stock')
+            _ingredient.cost = request.form.get('price')
+
+            _weight = Weight.query.filter_by(id=_ingredient.id).first()
+            _ingredient.weight_id = _weight.id
+            db.session.commit()
+
+            message = 'Form submitted successfully.'
+            flash(message)
+
+            return redirect(url_for('inventory', message="Succesfully saved changes!!"))
+
+    return render_template("editIngredient.html", form=form, name=name, error="")
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -521,7 +550,9 @@ def inventory():
         weight_cat = Weight.query.filter_by(id=i.weight_id).first()
         weight_list.append(weight_cat.name)
 
-    return render_template('ingredient.html', ingre=get_ingredients, zip=zip, weight_list=weight_list)
+    message = request.args.get('message')
+
+    return render_template('ingredient.html', ingre=get_ingredients, zip=zip, weight_list=weight_list, message=message)
 
 
 @ app.route('/item/<int:num>', methods=['GET', 'POST'])

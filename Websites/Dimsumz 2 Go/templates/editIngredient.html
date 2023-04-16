@@ -61,7 +61,7 @@
             <div class="col-lg-8">
                 <div class="card mx-auto">
                     <div class="card-body">
-                        <h1 class="register-logo text-center">Edit A Recipe</h1>
+                        <h1 class="register-logo text-center">Edit A Ingredient</h1>
 
                         <button
                             data-hover="By default this is turn on, this locks all other forms except the quantity field"
@@ -70,7 +70,7 @@
                         <br>
                         <br>
 
-                        <form method="POST" action="{{ url_for('addIngredients') }}">
+                        <form method="POST" action="{{ url_for('editIngredient', name=name) }}">
                             {{ form.csrf_token }}
                             <div class="form-group">
                                 {{ form.name.label(class_='text-right') }}
@@ -78,7 +78,7 @@
                             </div>
                             <div class="form-group">
                                 {{ form.stock.label(class_='text-right') }}
-                                {{ form.stock(class_='form-control') }}
+                                {{ form.stock(class_='form-control', id="stocks") }}
                             </div>
                             <div class="form-group">
                                 {{ form.price.label(class_='text-right') }}
@@ -95,9 +95,13 @@
                             {% endif %}
                             <div class="text-center">
                                 <button id="ayeSubmit" type="submit" value="Add"
-                                    class="btn btn-outline-danger my-3  mx-auto">Create</button>
+                                    class="btn btn-outline-danger my-3  mx-auto">Edit</button>
                             </div>
-                            <p id="fieldError"></p>
+
+                            {% if error %}
+                            <p>{{ error }}</p>
+                            {% endif %}
+
                         </form>
                     </div>
                 </div>
@@ -131,13 +135,19 @@
     </div>
 
     <script>
-        var myButton = document.getElementById("checker");
-        myButton.classList.add("btn-danger");
-        myButton.innerHTML = "Lock On";
+        var oneTime = 0;
 
-        document.getElementById("recipe").disabled = true;
-        document.getElementById("price").disabled = true;
-        document.getElementById("ingredients-select-box").disabled = true;
+        if (oneTime == 0) {
+            var myButton = document.getElementById("checker");
+            myButton.classList.add("btn-danger");
+            myButton.innerHTML = "Lock On";
+
+            document.getElementById("recipe").disabled = true;
+            document.getElementById("price").disabled = true;
+            document.getElementById("ingredients-select-box").disabled = true;
+            oneTime++;
+        }
+
     </script>
 
     <script>
@@ -167,41 +177,59 @@
 
     <script>
 
+        var myButton = document.getElementById("checker");
+
         // Get references to the locked fields
-        const recipeField = document.getElementById('recipe');
-        const priceField = document.getElementById('price');
-        const weightField = document.getElementById('ingredients-select-box');
+        var recipeField = document.getElementById('recipe');
+        var priceField = document.getElementById('price');
+        var weightField = document.getElementById('ingredients-select-box');
+        var quantityField = document.getElementById('stocks');
 
 
         // Get a reference to the unlock button
         const unlockButton = document.getElementById('ayeSubmit');
 
-        // Add a click event listener to the unlock button
-        unlockButton.addEventListener('click', function () {
-            // Remove the disabled attribute from the locked fields
-            document.getElementById("ingredients-select-box").disabled = false;
-            document.getElementById("recipe").disabled = false;
-            document.getElementById("price").disabled = false;
-        });
 
-        // Get a reference to the form and error paragraph
+        var myButton2 = document.getElementById("checker");
+
+        // Get a reference to the form
         const form = document.querySelector('form');
-        var errorLabel = document.getElementById('fieldError');
 
         // Add a submit event listener to the form
         form.addEventListener('submit', function (event) {
-            // If the recipe field is still disabled, prevent the form from submitting
-            if (recipeField.disabled) {
+
+            // Unlock all fields so data can be passed and let the validation do the job.
+            if (recipeField.value.length === 0 || priceField.value.length === 0 || weightField.value.length === 0 || quantityField.value.length === 0) {
                 event.preventDefault();
-                errorLabel.style.color = "red";
-                errorLabel.style.textDecorationThickness = "900";
-                errorLabel.innerHTML = "Please fill out the empty fields."
-                myButton.click();
+                myButton2.classList.remove("btn-primary");
+                myButton2.classList.add("btn-danger");
+                myButton2.innerHTML = "Lock On";
 
-
+                document.getElementById("recipe").disabled = true;
+                document.getElementById("price").disabled = true;
+                document.getElementById("ingredients-select-box").disabled = true;
             }
+            else {
+                unlockButton.addEventListener('click', function () {
+                    myButton.classList.remove("btn-danger");
+                    myButton.classList.add("btn-primary");
+                    myButton.innerHTML = "Lock Off";
+
+                    // Remove the disabled attribute from the locked fields
+                    document.getElementById("ingredients-select-box").disabled = false;
+                    document.getElementById("recipe").disabled = false;
+                    document.getElementById("price").disabled = false;
+                });
+                unlockButton.click()
+            }
+
         });
+
     </script>
+
+
+
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
