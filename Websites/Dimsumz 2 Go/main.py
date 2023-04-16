@@ -228,9 +228,19 @@ def updateQuery(ingredients, quantity, weight, recipe, desc, num, isPushed):
 
 # Create Recipe Form
 
+@app.route("/buyMenu/<string:name>")
+def buyMenu(name):
 
-@ app.route('/create', methods=['GET', 'POST'])
-@ login_required
+    menuQuantity = int(request.args.get('quantity'))
+    ic(menuQuantity)
+
+    # TODO: FINISH THIS
+
+    return "Yey"
+
+
+@app.route('/create', methods=['GET', 'POST'])
+@login_required
 def create():
 
     form = CreateForm()
@@ -308,8 +318,8 @@ def create():
     return render_template('create.html', form=form, error="")
 
 
-@ app.route("/dashboard", methods=['GET', 'POSTS'])
-@ login_required
+@app.route("/dashboard", methods=['GET', 'POSTS'])
+@login_required
 def dashboard():
     global user_type
 
@@ -347,10 +357,48 @@ def delete(num):
     return redirect(url_for('dashboard', message="Deletion of Ingredient Succesfull!"))
 
 
+@app.route('/deleteIngredient/<string:name>', methods=['GET', 'POST'])
+def deleteIngredient(name):
+
+    _ingredient = Ingredient.query.filter_by(name=name).first()
+
+    deleted_related_menus = request.args.get('deleteRelatedMenus')
+
+    if _ingredient:
+        if deleted_related_menus:
+
+            # Check if ingredient is associated with a menu item and delete them
+            _menuItemIngredient = menuItemIngredient.query.filter_by(
+                ingredient_id=_ingredient.id).all()
+
+            if _menuItemIngredient:
+
+                for item in _menuItemIngredient:
+                    _menuItem = menuItem.query.filter_by(
+                        id=item.menu_item_id).first()
+                    _image = Image.query.filter_by(
+                        menu_item_id=item.menu_item_id).first()
+
+                    db.session.delete(_image)
+                    db.session.delete(item)
+                    db.session.delete(_menuItem)
+
+            # Delete the ingredient
+            db.session.delete(_ingredient)
+            db.session.commit()
+            message = "Ingredient deleted successfully"
+        else:
+            message = "Please delete the menu items associated first before deleting the ingredient"
+    else:
+        message = "Ingredient not found"
+
+    return redirect(url_for("inventory", message=message))
+
+
 @login_required
 # TODO: Check Users
-@ app.route('/edit/<int:num>', methods=['GET', 'POST'])
-@ login_required
+@app.route('/edit/<int:num>', methods=['GET', 'POST'])
+@login_required
 def edit(num):
 
     form = CreateForm()
@@ -498,7 +546,7 @@ def index():
 
 
 # Create Ingredient Form
-@ app.route('/create-ingredient', methods=['GET', 'POST'])
+@app.route('/create-ingredient', methods=['GET', 'POST'])
 def addIngredients():
 
     form = IngredientForm()
@@ -523,22 +571,22 @@ def addIngredients():
     return render_template("ingredientForm.html", form=form)
 
 
-@ app.route('/graphs', methods=['GET', 'POST'])
-@ check_user
+@app.route('/graphs', methods=['GET', 'POST'])
+@check_user
 def graphs():
 
     return "For Accountant"
 
 
-@ app.route('/home', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET', 'POST'])
 def home():
 
     return "<h1>Simple static website for users</h1>"
 
 
-@ app.route('/inventory', methods=['GET', 'POST'])
-@ login_required
-@ check_user
+@app.route('/inventory', methods=['GET', 'POST'])
+@login_required
+@check_user
 def inventory():
 
     get_ingredients = Ingredient.query.all()
@@ -552,11 +600,15 @@ def inventory():
 
     message = request.args.get('message')
 
+    # For deleteIngredients
+
+    is_associated = request.args.get('is_associated')
+
     return render_template('ingredient.html', ingre=get_ingredients, zip=zip, weight_list=weight_list, message=message)
 
 
-@ app.route('/item/<int:num>', methods=['GET', 'POST'])
-@ login_required
+@app.route('/item/<int:num>', methods=['GET', 'POST'])
+@login_required
 # @check_user TODO find a way to implement this:
 def item(num):
 
@@ -579,14 +631,14 @@ def item(num):
     return render_template('viewRecipe.html', img=img, menu=menu_item, list=ingredient_list, num=num)
 
 
-@ app.route("/logout", methods=['GET', 'POST'])
+@app.route("/logout", methods=['GET', 'POST'])
 def logout():
     logout_user()
 
     return redirect(url_for('index'))
 
 
-@ app.route('/register', methods=['POST', 'GET'])
+@app.route('/register', methods=['POST', 'GET'])
 def register():
     # TODO create a what role for register to be automatically populated
     form = RegistrationForm()
@@ -637,9 +689,9 @@ def register():
     return render_template("register.html", form=form)
 
 
-@ app.route('/recipes', methods=['GET', 'POST'])
-@ login_required
-@ check_user
+@app.route('/recipes', methods=['GET', 'POST'])
+@login_required
+@check_user
 def recipes():
 
     menus = menuItem.query.all()
@@ -648,13 +700,13 @@ def recipes():
     return render_template("recipes.html", menu=menus, img=imgs, zip=zip)
 
 
-@ app.route("/unauthorized", methods=['GET', 'POST'])
+@app.route("/unauthorized", methods=['GET', 'POST'])
 def unauthorized():
 
     return render_template("unauthorized.html")
 
 
-@ login_manager.user_loader
+@login_manager.user_loader
 def load_user(user_id):
 
     return Users.query.get(int(user_id))

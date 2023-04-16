@@ -85,7 +85,9 @@
                                 <h5 class="card-title custom-title-truncate ">{{ m.name }}</h5>
 
                                 <p class="card-text custom-truncate">{{ m.desc }}</p>
-                                <button type="submit" value="Add" class="btn btn-danger btn-position my-1 mx-auto">Buy
+                                <button data-bs-toggle="modal" style="cursor: pointer;" data-bs-target="#popup"
+                                    id='delete-btn' class="btn-position my-1 mx-auto btn btn-danger"
+                                    onclick="showPopup('{{m.name}}')">Buy
                                     for ₱{{ m.cost}}</button>
                             </div>
                         </div>
@@ -113,12 +115,80 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="popup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">🧾 Sale</h1>
+                </div>
+                <div class="modal-body">
+                    How many order?
+                    <br>
+                    <div class="input-group">
+                        <input type="number" value="1" min="0" step="1" class="form-control" id="amountInput">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button href="" type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        id="cancelBtn">Cancel</button>
+                    <button type="button" class="btn btn-danger"><a style="color:white" href="">Make
+                            purchase!</a></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPopup(name) {
+
+            // Set the href attribute of the 'Yes, I am sure' button to include the name variable
+            var buyButton = document.querySelector('#popup .btn-danger a');
+            var quanBox = document.getElementById("amountInput");
+            buyButton.href = "/buyMenu/" + name + "?quantity=" + quanBox.value;
+
+            // Show the modal
+            var popup = new bootstrap.Modal(document.getElementById('popup'));
+            popup.show();
+        }
+
+        document.getElementById("cancelBtn").addEventListener("click", function () {
+            var modalBackdrop = document.querySelector(".modal-backdrop");
+            modalBackdrop.parentNode.removeChild(modalBackdrop);
+            $('#amountInput').val(1);
+        });
+
+    </script>
+
+    <script>
+        document.querySelectorAll('.up-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const menuId = button.getAttribute('data-menu');
+                const menuQuantity = parseInt(localStorage.getItem(`menu-${menuId}`)) || 0;
+                localStorage.setItem(`menu-${menuId}`, menuQuantity + 1);
+            });
+        });
+
+        document.querySelectorAll('.down-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const menuId = button.getAttribute('data-menu');
+                const menuQuantity = parseInt(localStorage.getItem(`menu-${menuId}`)) || 0;
+                localStorage.setItem(`menu-${menuId}`, Math.max(menuQuantity - 1, 0));
+            });
+        });
+    </script>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.4.js"
+        integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous">
         </script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
         integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
         crossorigin="anonymous"></script>
+
 
 
 </body>
