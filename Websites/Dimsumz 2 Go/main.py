@@ -224,19 +224,60 @@ def updateQuery(ingredients, quantity, weight, recipe, desc, num, isPushed):
     db.session.commit()
 
 
+unit_map = {
+    'oz': 28.35,   # 1 oz = 28.35 g
+    'lb': 453.59,  # 1 lb = 453.59 g
+    'g': 1,
+    'kg': 1000    # 1 kg = 1000 g
+}
+
 # ---------------------------- FLASK FUNCTIONS ----------------------------
 
 # Create Recipe Form
 
+
 @app.route("/buyMenu/<string:name>")
 def buyMenu(name):
 
-    menuQuantity = int(request.args.get('quantity'))
-    ic(menuQuantity)
+    orders = int(request.args.get('quantity'))
+    ctr = 0
 
-    # TODO: FINISH THIS
+    # Get menuItem ID to find all required ingredients in menu_item_ingredients
+    _menuItem = menuItem.query.filter_by(name=name).first()
 
-    return "Yey"
+    # Retrieve all associated menu_item_ingredients rows with menuItem
+    _menuItemIngredient = menuItemIngredient.query.filter_by(
+        menu_item_id=_menuItem.id).first()
+
+    deducted_onhand_ingredients = []
+    not_enough_ingredients_list = []
+
+    while ctr != orders:
+
+        for row in _menuItemIngredient:
+
+            # Retrieve both weight type and quantity for required ingredients and on-hand ingredients
+            required_qty = row.quantity
+            _required_weight = Weight.query.filter_by(id=row.weight_id).first()
+
+            _on_hand_qty = Ingredient.query.filter_by(
+                id=row.ingredient_id).first()
+            on_hand_qty = _on_hand_qty.quantity
+            _on_hand_weigth = Weight.query.filter_by(
+                id=_on_hand_qty.weight_id).first()
+
+            # Convert both required and on hand to grams
+            req_qty_in_grams = required_qty * unit_map[_required_weight.name]
+            on_hand_qty_in_grams = on_hand_qty * unit_map[on_hand_qty]
+
+            if on_hand_qty_in_grams > req_qty_in_grams:
+
+                deduction = on_hand_qty_in_grams - req_qty_in_grams
+                deducted_onhand_ingredients.append(deduction)
+
+                # TODO: Figure out how to convert back them deducted.
+
+    return f"{name}"
 
 
 @app.route('/create', methods=['GET', 'POST'])
