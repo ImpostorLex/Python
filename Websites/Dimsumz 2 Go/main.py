@@ -231,6 +231,28 @@ unit_map = {
     'kg': 1000    # 1 kg = 1000 g
 }
 
+
+def gramToOriginal(weight_type, remaining):
+
+    if weight_type == 'kg':
+
+        return round(remaining / 1000, 2)
+
+    elif weight_type == 'lb':
+
+        return round(remaining / 453.59, 2)
+
+    elif weight_type == 'g':
+
+        return remaining
+    elif weight_type == 'oz':
+
+        return round(remaining / 28.35, 2)
+    else:
+
+        return "404"
+
+
 # ---------------------------- FLASK FUNCTIONS ----------------------------
 
 # Create Recipe Form
@@ -247,10 +269,11 @@ def buyMenu(name):
 
     # Retrieve all associated menu_item_ingredients rows with menuItem
     _menuItemIngredient = menuItemIngredient.query.filter_by(
-        menu_item_id=_menuItem.id).first()
+        menu_item_id=_menuItem.id).all()
 
     deducted_onhand_ingredients = []
     not_enough_ingredients_list = []
+    qty_missing_ingredient_list = []
 
     while ctr != orders:
 
@@ -268,14 +291,32 @@ def buyMenu(name):
 
             # Convert both required and on hand to grams
             req_qty_in_grams = required_qty * unit_map[_required_weight.name]
-            on_hand_qty_in_grams = on_hand_qty * unit_map[on_hand_qty]
+            on_hand_qty_in_grams = on_hand_qty * unit_map[_on_hand_weigth.name]
 
             if on_hand_qty_in_grams > req_qty_in_grams:
 
                 deduction = on_hand_qty_in_grams - req_qty_in_grams
                 deducted_onhand_ingredients.append(deduction)
 
-                # TODO: Figure out how to convert back them deducted.
+                # Convert back to the original weight code
+                x = gramToOriginal(_on_hand_weigth.name, deduction)
+
+                ic(x)
+
+            # Remember all not satisfied ingredients to let the user know
+            else:
+                not_enough_ingredients_list.append(_on_hand_qty.name)
+                qty_missing_ingredient_list.append(
+                    str(round(on_hand_qty_in_grams - req_qty_in_grams, 2)))
+
+                not_enough_ingredients_list_str = ','.join(
+                    not_enough_ingredients_list)
+                qty_missing_ingredient_list_str = ','.join(
+                    qty_missing_ingredient_list)
+
+                return redirect(url_for('recipes', data1=not_enough_ingredients_list_str, data2=qty_missing_ingredient_list_str))
+
+            ctr = ctr + 1
 
     return f"{name}"
 
@@ -730,15 +771,27 @@ def register():
     return render_template("register.html", form=form)
 
 
-@app.route('/recipes', methods=['GET', 'POST'])
+@app.route('/recipes/', methods=['GET', 'POST'], defaults={'data1': None, 'data2': None})
+@app.route('/recipes/<data1>/<data2>', methods=['GET', 'POST'])
 @login_required
-@check_user
-def recipes():
+# @check_user # TODO: check_user
+def recipes(data1, data2):
 
     menus = menuItem.query.all()
     imgs = Image.query.all()
 
-    return render_template("recipes.html", menu=menus, img=imgs, zip=zip)
+    # When user buys an ingredient but is not enough show items that is not enough
+    data1_list = []
+    data2_list = []
+
+    if data1:
+
+        data1_list = data1.split(',')
+        data2_list = data2.split(',')
+
+    ic(data2_list, data1_list)
+
+    return render_template("recipes.html", menu=menus, img=imgs, zip=zip, missing_ingre=data1_list, missing_qty=data2_list)
 
 
 @app.route("/unauthorized", methods=['GET', 'POST'])
