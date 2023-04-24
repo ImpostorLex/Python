@@ -9,6 +9,7 @@ from functools import wraps
 from sqlalchemy import Date
 import ast
 import json
+import datetime
 
 
 app = Flask(__name__)
@@ -261,19 +262,31 @@ def gramToOriginal(weight_type, remaining):
 @app.route("/buyMenu/<string:name>")
 def buyMenu(name):
 
+    # TODO: Test with multiple ingredients, with and without missing ignredients.
+
     orders = int(request.args.get('quantity'))
     ctr = 0
 
     # Get menuItem ID to find all required ingredients in menu_item_ingredients
     _menuItem = menuItem.query.filter_by(name=name).first()
 
+    total_cost = float(_menuItem.cost) * orders
     # Retrieve all associated menu_item_ingredients rows with menuItem
     _menuItemIngredient = menuItemIngredient.query.filter_by(
         menu_item_id=_menuItem.id).all()
 
     deducted_onhand_ingredients = []
+
+    # List of all ingredients spent on
+
+    ingredients_used = []
+    qty_left = []
+    weight_used = []
+
+    # List of missing ingredients
     not_enough_ingredients_list = []
     qty_missing_ingredient_list = []
+    weight_type_missing_ingredients_list = []
 
     while ctr != orders:
 
@@ -298,8 +311,12 @@ def buyMenu(name):
                 deduction = on_hand_qty_in_grams - req_qty_in_grams
                 deducted_onhand_ingredients.append(deduction)
 
+                ingredients_used.append(_on_hand_qty.name)
+                weight_used.append(_on_hand_weigth.name)
+
                 # Convert back to the original weight code
                 x = gramToOriginal(_on_hand_weigth.name, deduction)
+                qty_left.append(str(round(x, 2)))
 
                 ic(x)
 
@@ -308,17 +325,16 @@ def buyMenu(name):
                 not_enough_ingredients_list.append(_on_hand_qty.name)
                 qty_missing_ingredient_list.append(
                     str(round(on_hand_qty_in_grams - req_qty_in_grams, 2)))
-
-                not_enough_ingredients_list_str = ','.join(
-                    not_enough_ingredients_list)
-                qty_missing_ingredient_list_str = ','.join(
-                    qty_missing_ingredient_list)
-
-                return redirect(url_for('recipes', data1=not_enough_ingredients_list_str, data2=qty_missing_ingredient_list_str))
+                weight_type_missing_ingredients_list.append(
+                    _on_hand_weigth.name)
 
             ctr = ctr + 1
 
-    return f"{name}"
+    if not_enough_ingredients_list:
+
+        return redirect(url_for('buyIngredients', data1=','.join(not_enough_ingredients_list), data2=','.join(qty_missing_ingredient_list), data3=','.join(weight_type_missing_ingredients_list), data4="missing", data5=total_cost))
+    else:
+        return redirect(url_for('buyIngredients', data1=','.join(ingredients_used), data2=','.join(qty_left), data3=','.join(weight_used), data4="false", data5=total_cost))
 
 
 @app.route('/create', methods=['GET', 'POST'])
@@ -771,27 +787,29 @@ def register():
     return render_template("register.html", form=form)
 
 
-@app.route('/recipes/', methods=['GET', 'POST'], defaults={'data1': None, 'data2': None})
-@app.route('/recipes/<data1>/<data2>', methods=['GET', 'POST'])
+@app.route('/buyIngredients', methods=['GET', 'POST'])
+def buyIngredients():
+
+    data1 = request.args.get('data1').split(',')
+    data2 = request.args.get('data2').split(',')
+    data3 = request.args.get('data3').split(',')
+    data4 = request.args.get('data4')
+    data5 = request.args.get('data5')
+
+    date = datetime.datetime.now()
+
+    return render_template('missingIngredients.html', zip=zip, missing_ingre=data1, missing_qty=data2, missing_weight=data3, is_missing=data4, date=date, cost=data5)
+
+
+@app.route('/recipes/', methods=['GET', 'POST'])
 @login_required
 # @check_user # TODO: check_user
-def recipes(data1, data2):
+def recipes():
 
     menus = menuItem.query.all()
     imgs = Image.query.all()
 
-    # When user buys an ingredient but is not enough show items that is not enough
-    data1_list = []
-    data2_list = []
-
-    if data1:
-
-        data1_list = data1.split(',')
-        data2_list = data2.split(',')
-
-    ic(data2_list, data1_list)
-
-    return render_template("recipes.html", menu=menus, img=imgs, zip=zip, missing_ingre=data1_list, missing_qty=data2_list)
+    return render_template("recipes.html", menu=menus, img=imgs, zip=zip)
 
 
 @app.route("/unauthorized", methods=['GET', 'POST'])

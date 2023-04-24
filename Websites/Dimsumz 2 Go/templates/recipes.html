@@ -141,41 +141,6 @@
     </div>
 
 
-    <div class="modal fade" id="missingPopup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">🚨 Not enough!</h1>
-                </div>
-                <div class="modal-body">
-                    Oops, it seems like you are lacking in quantity of ingredients
-                    <br>
-                    {% for i, q in zip(missing_ingre, missing_qty) %}
-                    Name: {{ i }}, it lacks {{ q }}
-                    <br>
-                    {% endfor %}
-                </div>
-                <div class="modal-footer">
-                    <button href="" type="button" class="btn btn-warning" data-bs-dismiss="modal">Cancel
-                        order</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Show this pop-up modal for the missing ingredients -->
-    {% if missing_ingre %}
-
-    <button type="button" id="move" data-bs-toggle="modal" data-bs-target="#missingPopup">
-    </button>
-
-    <script>
-        // Show the modal
-        var missingPopup = document.getElementById('missingPopup');
-        missingPopup.click();
-    </script>
-    {% endif %}
-
     <script>
         function showPopup(name) {
 
