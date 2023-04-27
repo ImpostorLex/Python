@@ -10,6 +10,7 @@ from sqlalchemy import Date
 import ast
 import json
 import datetime
+from itertools import zip_longest
 
 
 app = Flask(__name__)
@@ -258,83 +259,66 @@ def gramToOriginal(weight_type, remaining):
 
 # Create Recipe Form
 
-
-@app.route("/buyMenu/<string:name>")
+@app.route('/buyMenu/<string:name>')
 def buyMenu(name):
 
-    # TODO: Test with multiple ingredients, with and without missing ignredients.
-
     orders = int(request.args.get('quantity'))
-    ctr = 0
 
     # Get menuItem ID to find all required ingredients in menu_item_ingredients
     _menuItem = menuItem.query.filter_by(name=name).first()
 
-    total_cost = float(_menuItem.cost) * orders
     # Retrieve all associated menu_item_ingredients rows with menuItem
     _menuItemIngredient = menuItemIngredient.query.filter_by(
         menu_item_id=_menuItem.id).all()
 
-    deducted_onhand_ingredients = []
+    # Count total cost
+    total_cost = float(_menuItem.cost) * orders
 
-    # List of all ingredients spent on
+    onhand_ingredient_list = []
+    onhand_quantity_list = []
+    onhand_weight_list = []
 
-    ingredients_used = []
-    qty_left = []
-    weight_used = []
+    # Contains the unique ingredients
+    req_ingredient_list = []
 
-    # List of missing ingredients
-    not_enough_ingredients_list = []
-    qty_missing_ingredient_list = []
-    weight_type_missing_ingredients_list = []
+    # Contains the non unique ingredients
+    dup_req_ingredient_list = []
 
-    while ctr != orders:
+    for item in _menuItemIngredient:
+        # Query the ingredient name to be appended
+        req_ingredient_name = Ingredient.query.filter_by(
+            id=item.ingredient_id).first()
 
-        for row in _menuItemIngredient:
+        if req_ingredient_name.name not in [t[0] for t in req_ingredient_list]:
+            # Query the weight name to be appended
+            req_weight_name = Weight.query.filter_by(id=item.weight_id).first()
 
-            # Retrieve both weight type and quantity for required ingredients and on-hand ingredients
-            required_qty = row.quantity
-            _required_weight = Weight.query.filter_by(id=row.weight_id).first()
+            unq = (req_ingredient_name.name,
+                   item.quantity, req_weight_name.name)
+            req_ingredient_list.append(unq)
 
-            _on_hand_qty = Ingredient.query.filter_by(
-                id=row.ingredient_id).first()
-            on_hand_qty = _on_hand_qty.quantity
-            _on_hand_weigth = Weight.query.filter_by(
-                id=_on_hand_qty.weight_id).first()
+        # If else then append the dups to the duplicate list
+        else:
+            dup_req_weight_name = Weight.query.filter_by(
+                id=item.weight_id).first()
 
-            # Convert both required and on hand to grams
-            req_qty_in_grams = required_qty * unit_map[_required_weight.name]
-            on_hand_qty_in_grams = on_hand_qty * unit_map[_on_hand_weigth.name]
+            dup = (req_ingredient_name.name,
+                   item.quantity, dup_req_weight_name.name)
+            dup_req_ingredient_list.append(dup)
 
-            if on_hand_qty_in_grams > req_qty_in_grams:
+            # Move the matching tuple from req_ingredient_list to the dup_req_ingredient_list
+            matching_tuples = [
+                t for t in req_ingredient_list if t[0] == req_ingredient_name.name]
+            tuple_to_remove = matching_tuples[0]
+            req_ingredient_list.remove(tuple_to_remove)
+            dup_req_ingredient_list.append(tuple_to_remove)
 
-                deduction = on_hand_qty_in_grams - req_qty_in_grams
-                deducted_onhand_ingredients.append(deduction)
+    ic(req_ingredient_list, dup_req_ingredient_list)
 
-                ingredients_used.append(_on_hand_qty.name)
-                weight_used.append(_on_hand_weigth.name)
+    # Outputs; ic| req_ingredient_list: [('Lemon', 4, 'oz')]
+   #  dup_req_ingredient_list: [('Patty', 1, 'kg'), ('Patty', 2, 'lb')]
 
-                # Convert back to the original weight code
-                x = gramToOriginal(_on_hand_weigth.name, deduction)
-                qty_left.append(str(round(x, 2)))
-
-                ic(x)
-
-            # Remember all not satisfied ingredients to let the user know
-            else:
-                not_enough_ingredients_list.append(_on_hand_qty.name)
-                qty_missing_ingredient_list.append(
-                    str(round(on_hand_qty_in_grams - req_qty_in_grams, 2)))
-                weight_type_missing_ingredients_list.append(
-                    _on_hand_weigth.name)
-
-            ctr = ctr + 1
-
-    if not_enough_ingredients_list:
-
-        return redirect(url_for('buyIngredients', data1=','.join(not_enough_ingredients_list), data2=','.join(qty_missing_ingredient_list), data3=','.join(weight_type_missing_ingredients_list), data4="missing", data5=total_cost))
-    else:
-        return redirect(url_for('buyIngredients', data1=','.join(ingredients_used), data2=','.join(qty_left), data3=','.join(weight_used), data4="false", data5=total_cost))
+    return "Yey"
 
 
 @app.route('/create', methods=['GET', 'POST'])

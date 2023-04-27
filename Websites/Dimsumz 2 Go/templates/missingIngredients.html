@@ -20,84 +20,107 @@
 
 <body>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-auto col-md-auto sticky-top" style="background-color: #f55052;">
-                <div class="d-flex flex-sm-column flex-row flex-nowrap  align-items-center sticky-top">
 
-                    <ul
-                        class="nav nav-pills nav-flush flex-sm-column flex-row flex-nowrap mb-auto mx-auto text-center justify-content-between w-100 px-3 align-items-center">
-                        <li class="nav-item">
-                            <a href="{{ url_for('home') }}" class="nav-link py-3 px-2 hovertext" data-hover="Home"
-                                title="" data-bs-toggle="tooltip" data-bs-placement="right"
-                                data-bs-original-title="Home">
-                                <i class="fa-solid fa-house" style="color:white;"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('dashboard') }}" class="nav-link py-3 px-2 hovertext"
-                                data-hover="Dashboard" title="" data-bs-toggle="tooltip" data-bs-placement="right"
-                                data-bs-original-title="Dashboard">
-                                <i class="fa-solid fa-table-columns" style="color:white;"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('graphs') }}" class="nav-link py-3 px-2 hovertext" data-hover="Graphs"
-                                data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Graphs">
-                                <i class="fa-solid fa-chart-simple" style="color:white;"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('inventory') }}" class="nav-link py-3 px-2 hovertext"
-                                data-hover="Inventory" title="" data-bs-toggle="tooltip" data-bs-placement="right"
-                                data-bs-original-title="Products">
-                                <i class="fa-solid fa-warehouse" style="color:white;"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('logout') }}" class="nav-link py-3 px-2 hovertext" data-hover="Sign-out"
-                                title="" data-bs-toggle="tooltip" data-bs-placement="right"
-                                data-bs-original-title="Sign-out">
-                                <i class="fa-solid fa-right-from-bracket" style="color:white;"></i>
-                            </a>
-                        </li>
-                    </ul>
+    <nav class="navbar navbar-expand-lg sticky-top" style="background-color: #f55052;">
+        <div class=" container-fluid">
+            <a href="{{ url_for('home') }}" class="nav-link py-3 px-2 hovertext" data-hover="Home" title=""
+                data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
+                <i class="fa-solid fa-2x" style="color:white;">Dimsumz 2 Go</i>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a href="{{ url_for('dashboard') }}" class="nav-link py-3 px-2 hovertext" data-hover="Dashboard"
+                        title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-table-columns fa-2x" style="color:white;"></i>
+                    </a>
+                    <a href="{{ url_for('inventory') }}" class="nav-link py-3 px-2 hovertext" data-hover="Graphs"
+                        title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-warehouse fa-2x" style="color:white;"></i>
+                    </a>
+
+                    <a href="{{ url_for('graphs') }}" class="nav-link py-3 px-2 hovertext" data-hover="Graphs" title=""
+                        data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-chart-simple fa-2x" style="color:white;"></i>
+                    </a>
+
+                    <a href="{{ url_for('logout') }}" class="nav-link py-3 px-2 hovertext" data-hover="Sign-out"
+                        title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-right-from-bracket fa-2x" style="color:white;"></i>
+                    </a>
                 </div>
             </div>
+        </div>
+    </nav>
 
-            <div class="col-lg-9 col-md-9 p-3 min-vh-100 justify-content-center d-flex">
-
-                <div class="card position-relative" style="max-height: 400px;">
-                    <div class="card-body">
-
+    <div class="container-fluid" style="margin-top: -20vh;">
+        <div class="row p-3 min-vh-100 justify-content-center align-items-center">
+            <div class="col-12 col-md-6 d-flex justify-content-center">
+                <div class="card">
+                    <div class="card-body" style="padding: 20px">
                         {% if is_missing == 'missing' %}
-                        <h5 style="font-size: 3.5rem;" class="card-title custom-title-truncate ">Failure!</h5>
+                        <h5 style="font-size: 3.5rem; color:red;" class="card-title custom-title-truncate">
+                            Failure!</h5>
                         <p style="font-size: 1.5rem;" class="card-text custom-truncate">
-                            Oops, it seems like you are lacking in quantity of ingredients
-                            <br>
-                            {% for i, q, w in zip(missing_ingre, missing_qty, missing_weight) %}
-                            <strong>Name:</strong> {{ i }} <strong>{{ q }} </strong> {{ w }} missing!
-                            <br>
-                            {% endfor %}
-                        </p>
+                            Oops, it seems like you are lacking in quantity of ingredients</p>
+                        <br>
+                        <table class="table table-bordered" style="max-width: 100%;">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Ingredient</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Weight</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i, q, w in zip(missing_ingre, missing_qty, missing_weight) %}
+                                <tr>
+                                    <th scope="row">{{ loop.index }}</th>
+                                    <th>{{ i }}</th>
+                                    <th>{{ q }}</th>
+                                    <th>{{ w }}</th>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <br>
                         <strong>Time: {{ date }} </strong>
                         {% elif is_missing == 'false' %}
-                        <h5 style="font-size: 3.5rem;" class="card-title custom-title-truncate ">Success!
-                        </h5>
+                        <h5 style="font-size: 3.5rem;" class="card-title custom-title-truncate">Success!</h5>
                         <p style="font-size: 1.5rem;" class="card-text">
-                            Here our the ingredients used and remaining quantity left.
-                            <br>
-                            {% for i, q, w in zip(missing_ingre, missing_qty, missing_weight) %}
-                            <strong>Name:</strong> {{ i }} <strong>{{ q }} </strong> {{ w }} left!
-                            <br>
-                            {% endfor %}
-                        </p>
+                            Here are the remaining quantity of ingredients used</p>
+                        <br>
+                        <table class="table table-bordered" style="max-width: 100%;">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Ingredient</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Weight</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i, q, w in zip(missing_ingre, missing_qty, missing_weight) %}
+                                <tr>
+                                    <th scope="row">{{ loop.index }}</th>
+                                    <th>{{ i }}</th>
+                                    <th>{{ q }}</th>
+                                    <th>{{ w }}</th>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <br>
+                        <br>
                         <strong>Time: {{ date }} </strong>
                         <br>
                         <strong>Total cost: {{ cost }} </strong>
                         {% else %}
-                        <h5 class="card-title custom-title-truncate ">It looks like something went wrong.
-                        </h5>
+                        <h5 class="card-title custom-title-truncate">It looks like something went wrong.</h5>
                         <p class="card-text custom-truncate">
                             Please try again.
                         </p>
@@ -109,6 +132,33 @@
             </div>
         </div>
     </div>
+
+    <div class="container-fluid fixed-footer" style="background-color: #c3282c;">
+        <div class="row justify-content-center">
+            <div class="col-md-12 text-center" style="padding-top: 40px;">
+                <h2 class="footer-heading"><a href="#" class="logo" style="color:white">Dimsumz2Go.com</a>
+                </h2>
+                <p class="menu">
+                    <a href="#">Home</a>
+                    <a href="#">Register</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Logout</a>
+                </p>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-md-12 text-center">
+                <p class="copyright">
+                    Copyright &copy;
+                    <script>document.write(new Date().getFullYear());</script> Dimsumz2Go
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
