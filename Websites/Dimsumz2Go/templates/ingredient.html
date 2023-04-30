@@ -70,7 +70,7 @@
             <div class="col-lg-9 col-md-9 p-3 min-vh-100 mx-auto table-responsive-sm"
                 style="height: 50px; overflow: auto;">
 
-                <h1 class="text-center" style="color:#f55052;">Add another Ingredient Form</h1>
+                <h1 class="text-center" style="color:#f55052;">Ingredient Form</h1>
                 <br>
                 {% if message %}
 
@@ -81,14 +81,26 @@
 
                 {% endif%}
 
+                <form method="POST" action="{{ url_for('searchIngredient') }}">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control input-text" placeholder="Search ingredients...."
+                            aria-describedby="basic-addon2" id="search_term" name="search_term">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-outline-warning btn-lg"><i
+                                    class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+
+
+
                 <table class="table table-hover ingredient-table text-center">
                     <thead class="table-dark sticky-top">
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Name</th>
                             <th scope="col">Stocks</th>
-                            <th scope="col">Price</th>
-                            <th scope="col ">Weight</th>
+                            <th scope="col">Price per Weight</th>
                             <th scope="col">Mode</th>
                         </tr>
                     </thead>
@@ -100,8 +112,7 @@
                             <th scope="row">{{ loop.index0 + 1}}</th>
                             <td>{{ i.name }}</td>
                             <td>{{ i.quantity }}</td>
-                            <td>{{ i.cost }}</td>
-                            <td>{{ w }}</td>
+                            <td>{{ i.cost }} / {{ w }}</td>
                             <td><a class="hovertext" data-hover="Edit" data-bs-original-title="Edit"
                                     href="{{ url_for('editIngredient', name=i.name )}}">✏️&nbsp;&nbsp;&nbsp;</a><a
                                     data-bs-toggle="modal" style="cursor: pointer;" data-bs-target="#popup"

@@ -21,7 +21,7 @@ hashing = Hashing(app)
 db = SQLAlchemy(app)
 user_type = 0
 
-# TODO: added search functionality ot the Inventory
+# TODO: added search functionality ot the Inventoryhabit
 
 # -------------------------------- Database Design -------------------------------- #
 
@@ -810,6 +810,20 @@ def inventory():
     is_associated = request.args.get('is_associated')
 
     return render_template('ingredient.html', ingre=get_ingredients, zip=zip, weight_list=weight_list, message=message)
+
+
+@app.route('/searchIngredient', methods=['POST', 'GET'])
+def searchIngredient():
+
+    nice = request.form.get('search_term')
+
+    for char in nice:
+        if not char.isalpha():
+
+            error = "Only letters and numbers are allowed, please try again"
+            return redirect(url_for('inventory', message=error))
+    # TODO: continue this
+    return "Yey"
 
 
 @app.route('/item/<int:num>', methods=['GET', 'POST'])
