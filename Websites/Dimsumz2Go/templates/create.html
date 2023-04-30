@@ -186,16 +186,19 @@
             const newSelectBox = selectBox.cloneNode(true);
             newSelectBox.id = `ingredients-field-${selectBoxCount}`;
             newSelectBox.name = `ingredients-field-${selectBoxCount}`;
+            newSelectBox.value = "";
 
             // create a new IntegerField
             const newQuantityField = quantityField.cloneNode(true);
             newQuantityField.id = `quantity-field-${selectBoxCount}`;
             newQuantityField.name = `quantity-field-${selectBoxCount}`;
+            newQuantityField.value = "";
 
             // create a new SelectField
             const newWeightField = weightField.cloneNode(true);
             newWeightField.id = `weight-field-${selectBoxCount}`;
             newWeightField.name = `weight-field-${selectBoxCount}`;
+            newWeightField.value = ""
 
             // create a new label for the SelectField
             const selectBoxLabel = document.createElement("label");
@@ -207,8 +210,6 @@
             const quantityLabel = document.createElement("label");
             quantityLabel.textContent = `Quantity ${selectBoxCount}`;
             quantityLabel.setAttribute("id", `quantityLabel-${selectBoxCount}`);
-
-
 
             // append the new fields to the form
             selectBoxContainer.appendChild(selectBoxLabel);

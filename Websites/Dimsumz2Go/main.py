@@ -21,6 +21,7 @@ hashing = Hashing(app)
 db = SQLAlchemy(app)
 user_type = 0
 
+# TODO: added search functionality ot the Inventory
 
 # -------------------------------- Database Design -------------------------------- #
 
@@ -362,7 +363,11 @@ def quantityError():
 
     error = request.args.get('error')
     num = request.args.get('num')
-    return render_template('popupDelete.html', error=error, num=num)
+
+    if num is None:
+        return render_template('popupDelete.html', error=error, num="")
+    elif num is not None:
+        return render_template('popupDelete.html', error=error, num=num)
 
 # TODO: Add quantity validation to this page.
 
@@ -398,78 +403,67 @@ def create():
                 # cost.add(float(value))
                 ingredients_name.append(value)
             elif key.startswith('quantity-field-') or key == 'quantity':
-
-                try:
-                    num = float(value)
-                    quantity.append(value)
-                except ValueError:
-                    num = f"{value}"
-                    message = f"Quantity field must only numbers and should not contain any letters: {num}"
-                    return render_template('create.html', error2=message, form=form, error="")
-                except TypeError:
-                    num = f"{value}"
-                    message = f"Quantity field must only numbers and should not contain any letters: {num}"
-                    return render_template('create.html', error2=message, form=form, error="")
-
+                quantity.append(value)
             elif key.startswith('weight-field-') or key == 'weight':
                 weight.append(value)
 
-        # Query the cost for each Ingredients added
-        for i, q in zip(ingredients_name, quantity):
-            get_ingredients_cost = Ingredient.query.filter_by(name=i).first()
-            cost.add(float(get_ingredients_cost.cost) * float(q))
+        is_all_quantity = check_Quantity(quantity)
 
-        # First insert a row into the menuItem table
-        recipe = request.form.get('recipe')
-        desc = request.form.get('desc')
-        cost = sum(cost)
-        menu_item = menuItem(name=recipe, desc=desc, cost=cost)
-        db.session.add(menu_item)
-        db.session.commit()
+        if is_all_quantity:
+            return redirect(url_for('quantityError', error=is_all_quantity))
+        else:
+            # Query the cost for each Ingredients added
+            for i, q in zip(ingredients_name, quantity):
+                get_ingredients_cost = Ingredient.query.filter_by(
+                    name=i).first()
+                cost.add(float(get_ingredients_cost.cost) * float(q))
 
-        # Get the id of the inserted menu
-        menu_id = menu_item.id
-        ic(menu_id)
-
-        # Insert url and instruction and as well as the menu_id as the foreign key to the image table
-        url = request.form.get('url')
-        instructions = request.form.get('instructions')
-        image = Image(menu_item_id=menu_id, path=url,
-                      instructions=instructions)
-        db.session.add(image)
-        db.session.commit()
-
-        ctr = 1
-        for i, w, q in zip(ingredients_name, weight, quantity):
-
-            get_id_of_ingredient = Ingredient.query.filter_by(name=i).first()
-            get_id_of_weight = Weight.query.filter_by(name=w).first()
-
-            # Insert menu_id recently created and other details such as list_order and weight_id
-            insert_ingredient = menuItemIngredient(
-                menu_item_id=menu_id, ingredient_id=get_id_of_ingredient.id, list_order=ctr, weight_id=get_id_of_weight.id, quantity=q)
-
-            ctr += 1
-            db.session.add(insert_ingredient)
+            # First insert a row into the menuItem table
+            recipe = request.form.get('recipe')
+            desc = request.form.get('desc')
+            cost = sum(cost)
+            menu_item = menuItem(name=recipe, desc=desc, cost=cost)
+            db.session.add(menu_item)
             db.session.commit()
 
-        return redirect(url_for('recipes'))
-    elif form.validate_on_submit() == False:
-        ic("errors")
+            # Get the id of the inserted menu
+            menu_id = menu_item.id
+            ic(menu_id)
+
+            # Insert url and instruction and as well as the menu_id as the foreign key to the image table
+            url = request.form.get('url')
+            instructions = request.form.get('instructions')
+            image = Image(menu_item_id=menu_id, path=url,
+                          instructions=instructions)
+            db.session.add(image)
+            db.session.commit()
+
+            ctr = 1
+            for i, w, q in zip(ingredients_name, weight, quantity):
+
+                get_id_of_ingredient = Ingredient.query.filter_by(
+                    name=i).first()
+                get_id_of_weight = Weight.query.filter_by(name=w).first()
+
+                # Insert menu_id recently created and other details such as list_order and weight_id
+                insert_ingredient = menuItemIngredient(
+                    menu_item_id=menu_id, ingredient_id=get_id_of_ingredient.id, list_order=ctr, weight_id=get_id_of_weight.id, quantity=q)
+
+                ctr += 1
+                db.session.add(insert_ingredient)
+                db.session.commit()
+
+            return redirect(url_for('recipes'))
+    elif request.method == 'POST' and form.validate_on_submit() == False:
+        first_field = []
 
         for key, value in request.form.items():
             if key.startswith('quantity-field-') or key == 'quantity':
+                first_field.append(value)
+        has_errors = check_Quantity(first_field)
 
-                try:
-                    num = float(value)
-                except TypeError:
-                    num = f"{value}"
-                    message = f"Quantity field must only numbers and should not contain any letters: {num}"
-                    return render_template('create.html', error2=message, form=form, error="")
-                except ValueError:
-                    num = f"{value}"
-                    message = f"Quantity field must only numbers and should not contain any letters: {num}"
-                    return render_template('create.html', error2=message, form=form, error="")
+        if has_errors:
+            return redirect(url_for('quantityError', error=has_errors))
 
     return render_template('create.html', form=form, error="", error2="")
 
@@ -669,11 +663,22 @@ def editIngredient(name):
     # Query the to be edited
     if request.method == 'POST' and form.validate_on_submit():
 
-        if request.form.get('stock') == 0:
+        has_error = False
+        try:
 
-            error = "Re stocking of ingredients cannot be zero"
+            stock = float(request.form.get('stock'))
+            price = float(request.form.get('price'))
+            if stock <= 0 or price <= 0:
+                has_error = True
+                raise ValueError
+            else:
+                has_error = False
+        except (TypeError, ValueError):
+            ic("error")
+            error = "Stock and Quantity fields should only contains numbers and must not be less than zero"
             return render_template("editIngredient.html", form=form, name=name, error=error)
-        else:
+
+        if has_error is False:
 
             _ingredient = Ingredient.query.filter_by(name=name).first()
 
@@ -689,6 +694,20 @@ def editIngredient(name):
             flash(message)
 
             return redirect(url_for('inventory', message="Succesfully saved changes!!"))
+    elif request.method == 'POST' and form.validate_on_submit() == False:
+        has_error = False
+        try:
+            stock = float(request.form.get('stock'))
+            price = float(request.form.get('price'))
+            if stock <= 0 or price <= 0:
+                has_error = True
+                raise ValueError
+            else:
+                has_error = False
+        except (TypeError, ValueError):
+            ic("error")
+            error = "Stock and Quantity fields should only contains numbers and must not be less than zero"
+            return render_template("editIngredient.html", form=form, name=name, error=error)
 
     return render_template("editIngredient.html", form=form, name=name, error="")
 
@@ -731,17 +750,30 @@ def addIngredients():
         price = request.form.get('price')
         weight = request.form.get('weight')
 
-        weight_id = Weight.query.filter_by(name=weight).first()
+        if price.isalpha() or stock.isalpha() or float(price) <= 0 or float(stock) <= 0:
+            ic("true")
+            error = "Price and Quantity should be numbers only and should not be less than or equals to zero!"
+            return redirect(url_for('addIngredients', error=error))
+        else:
+            weight_id = Weight.query.filter_by(name=weight).first()
 
-        ingredient = Ingredient(name=name, quantity=stock,
-                                cost=price, weight_id=weight_id.id)
+            ingredient = Ingredient(name=name, quantity=stock,
+                                    cost=price, weight_id=weight_id.id)
 
-        db.session.add(ingredient)
-        db.session.commit()
+            db.session.add(ingredient)
+            db.session.commit()
 
-        return redirect(url_for('inventory'))
+            return redirect(url_for('inventory'))
+    elif form.validate_on_submit() == False and request.method == 'POST':
+        stock = request.form.get('stock')
+        price = request.form.get('price')
+        if price.isalpha() or stock.isalpha() or float(price) <= 0 or float(stock) <= 0:
+            ic("true")
+            error = "Price and Quantity should be numbers only and should not be less than or equals to zero!"
+            return redirect(url_for('addIngredients', error=error))
 
-    return render_template("ingredientForm.html", form=form)
+    error_msg = request.args.get('error')
+    return render_template("ingredientForm.html", form=form, error=error_msg)
 
 
 @app.route('/graphs', methods=['GET', 'POST'])

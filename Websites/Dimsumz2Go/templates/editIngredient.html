@@ -97,11 +97,6 @@
                                 <button id="ayeSubmit" type="submit" value="Add"
                                     class="btn btn-outline-danger my-3  mx-auto">Edit</button>
                             </div>
-
-                            {% if error %}
-                            <p>{{ error }}</p>
-                            {% endif %}
-
                         </form>
                     </div>
                 </div>
@@ -140,7 +135,7 @@
         if (oneTime == 0) {
             var myButton = document.getElementById("checker");
             myButton.classList.add("btn-danger");
-            myButton.innerHTML = "Lock On";
+            myButton.innerHTML = "Lock fields";
 
             document.getElementById("recipe").disabled = true;
             document.getElementById("price").disabled = true;
@@ -156,7 +151,7 @@
             if (!myButton.classList.contains("btn-primary")) {
                 myButton.classList.remove("btn-danger");
                 myButton.classList.add("btn-primary");
-                myButton.innerHTML = "Lock Off";
+                myButton.innerHTML = "Unlock fields";
 
                 document.getElementById("recipe").disabled = false;
                 document.getElementById("price").disabled = false;
@@ -165,7 +160,7 @@
             else if (!myButton.classList.contains("btn-danger")) {
                 myButton.classList.remove("btn-primary");
                 myButton.classList.add("btn-danger");
-                myButton.innerHTML = "Lock On";
+                myButton.innerHTML = "Lock fields";
 
                 document.getElementById("recipe").disabled = true;
                 document.getElementById("price").disabled = true;
@@ -203,7 +198,7 @@
                 event.preventDefault();
                 myButton2.classList.remove("btn-primary");
                 myButton2.classList.add("btn-danger");
-                myButton2.innerHTML = "Lock On";
+                myButton2.innerHTML = "Lock fields";
 
                 document.getElementById("recipe").disabled = true;
                 document.getElementById("price").disabled = true;
@@ -213,7 +208,7 @@
                 unlockButton.addEventListener('click', function () {
                     myButton.classList.remove("btn-danger");
                     myButton.classList.add("btn-primary");
-                    myButton.innerHTML = "Lock Off";
+                    myButton.innerHTML = "Unlock fields";
 
                     // Remove the disabled attribute from the locked fields
                     document.getElementById("ingredients-select-box").disabled = false;

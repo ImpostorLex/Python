@@ -59,7 +59,7 @@
                             <a style="padding-top:30px;" href="{{ url_for('addIngredients') }}"
                                 class="nav-link py-3 px-2 hovertext" data-hover="Add Ingredient" title=""
                                 data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Sign-out">
-                                <i class="fa-solid fa-circle-plus " style="color:gold"></i>
+                                <i class="fa-solid fa-cart-plus fa-beat " style="color:gold"></i>
                             </a>
                         </li>
                     </ul>
@@ -70,6 +70,8 @@
             <div class="col-lg-9 col-md-9 p-3 min-vh-100 mx-auto table-responsive-sm"
                 style="height: 50px; overflow: auto;">
 
+                <h1 class="text-center" style="color:#f55052;">Add another Ingredient Form</h1>
+                <br>
                 {% if message %}
 
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
