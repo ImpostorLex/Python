@@ -56,6 +56,17 @@ hr {
 
 }
 
+.pop-up-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #d93c3f;
+    color: white;
+    padding: 20px;
+    text-align: center;
+
+}
 
 
 .recipe-img-hover:hover {

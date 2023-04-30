@@ -7,8 +7,6 @@ from form import LoginForm, RegistrationForm, CreateForm, IngredientForm
 from time import sleep
 from functools import wraps
 from sqlalchemy import Date
-import ast
-import json
 import datetime
 from itertools import zip_longest
 
@@ -25,6 +23,7 @@ user_type = 0
 
 
 # -------------------------------- Database Design -------------------------------- #
+
 
 class Users(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -118,6 +117,34 @@ class menuItemIngredient(db.Model):
 db.create_all()
 
 
+def check_Quantity(items):
+
+    errors = []  # list to store any errors that occur
+    for val in items:
+        try:
+            ic(val)
+            val = float(val)
+            if val <= 0:
+                raise ValueError
+        except ValueError:
+            ic("Value Error")
+            val = str(val)
+            error_msg = f"Please input only numbers and should not be less than or equals to zero: {val}"
+            errors.append(error_msg)
+        except TypeError:
+            ic("Type Error")
+            val = str(val)
+            error_msg = f"Please input only numbers and should not be less than or equals to zero: {val}"
+            errors.append(error_msg)
+
+    if len(errors) == 0:
+        # return None if there are no errors
+        return None
+    else:
+        # return the list of error messages if there are errors
+        return errors
+
+
 def check_user(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -137,93 +164,102 @@ def check_user(func):
 
 def updateQuery(ingredients, quantity, weight, recipe, desc, num, isPushed):
 
-    total = 0
+    # Check for quantity errors first
+    error_messages = check_Quantity(quantity)
+    if error_messages is not None:
+        ic(error_messages)
+        # redirect to error page if any errors occurred
+        return error_messages
+    else:
+        ic("Update is else")
+        total = 0
 
-    # If true then remove all dynamically added Fields first.
-    if isPushed == "pushed":
+        # If true then remove all dynamically added Fields first.
+        if isPushed == "pushed":
 
-        # Query all of specific ingredient:
-        all = menuItemIngredient.query.filter_by(menu_item_id=num).all()
+            # Query all of specific ingredient:
+            all = menuItemIngredient.query.filter_by(menu_item_id=num).all()
 
-        for row in all[1:]:
+            for row in all[1:]:
 
-            db.session.delete(row)
+                db.session.delete(row)
+
+            db.session.commit()
+
+        # Query the cost for each Ingredients added
+        for i, q in zip(ingredients, quantity):
+
+            get_ingredients_cost = Ingredient.query.filter_by(name=i).first()
+            total += float(get_ingredients_cost.cost) * float(q)
+
+        # Query the row to be updated, in this case the menuItem table first
+        menu = menuItem.query.filter_by(id=num).first()
+        menu.name = recipe
+        menu.desc = desc
+        menu.cost = total
+
+        # Second Query the Image table
+        image = Image.query.filter_by(menu_item_id=num).first()
+        image.path = request.form.get('url')
+        image.instructions = request.form.get('instructions')
+
+        menu_item_ingredients = menuItemIngredient.query.filter_by(
+            menu_item_id=num).all()
+
+        # Query all the ids related to the TO BE edited recipe.
+        ids = [int(ingre.id) for ingre in menu_item_ingredients]
+
+        ingredient_ids = []
+        weight_ids = []
+
+        # Query all the IDs of weight and ingredients
+        for ingre, wei in zip(ingredients, weight):
+
+            query_ingredient = Ingredient.query.filter_by(name=ingre).first()
+            ingredient_ids.append(query_ingredient.id)
+
+            query_weight = Weight.query.filter_by(name=wei).first()
+            weight_ids.append(query_weight.id)
+
+        ctr = 0
+        # Update ingredient_id and weight_id of menuItemIngredients accordingly to the ids queried.
+        for id, i2, w2, q2 in zip(ids, ingredient_ids, weight_ids, quantity):
+
+            ctr += 1
+            row = menuItemIngredient.query.filter_by(id=id).first()
+            row.ingredient_id = i2
+            row.weight_id = w2
+            row.quantity = q2
+
+        # Check if the old numbers of SelectField has changed i.e from 3 to 4
+
+        old = len(menu_item_ingredients)
+        new = len(ingredients)
+
+        if old != new and len(ingredients) != 1:
+
+            # Add the new Fields
+
+            for i in range(old, new):
+
+                # Query for the ids of the weight, ingredients and add them
+
+                get_weight_id = Weight.query.filter_by(name=weight[i]).first()
+                get_ingredient_id = Ingredient.query.filter_by(
+                    name=ingredients[i]).first()
+
+                if get_weight_id and get_ingredient_id:
+
+                    ctr += 1
+
+                    # Add the rows
+                    menuItemIngredientsInsert = menuItemIngredient(
+                        menu_item_id=num, ingredient_id=get_ingredient_id.id, list_order=ctr, weight_id=get_weight_id.id, quantity=quantity[i])
+
+                    db.session.add(menuItemIngredientsInsert)
 
         db.session.commit()
-
-    # Query the cost for each Ingredients added
-    for i, q in zip(ingredients, quantity):
-
-        get_ingredients_cost = Ingredient.query.filter_by(name=i).first()
-        total += float(get_ingredients_cost.cost) * float(q)
-
-    # Query the row to be updated, in this case the menuItem table first
-    menu = menuItem.query.filter_by(id=num).first()
-    menu.name = recipe
-    menu.desc = desc
-    menu.cost = total
-
-    # Second Query the Image table
-    image = Image.query.filter_by(menu_item_id=num).first()
-    image.path = request.form.get('url')
-    image.instructions = request.form.get('instructions')
-
-    menu_item_ingredients = menuItemIngredient.query.filter_by(
-        menu_item_id=num).all()
-
-    # Query all the ids related to the TO BE edited recipe.
-    ids = [int(ingre.id) for ingre in menu_item_ingredients]
-
-    ingredient_ids = []
-    weight_ids = []
-
-    # Query all the IDs of weight and ingredients
-    for ingre, wei in zip(ingredients, weight):
-
-        query_ingredient = Ingredient.query.filter_by(name=ingre).first()
-        ingredient_ids.append(query_ingredient.id)
-
-        query_weight = Weight.query.filter_by(name=wei).first()
-        weight_ids.append(query_weight.id)
-
-    ctr = 0
-    # Update ingredient_id and weight_id of menuItemIngredients accordingly to the ids queried.
-    for id, i2, w2, q2 in zip(ids, ingredient_ids, weight_ids, quantity):
-
-        ctr += 1
-        row = menuItemIngredient.query.filter_by(id=id).first()
-        row.ingredient_id = i2
-        row.weight_id = w2
-        row.quantity = q2
-
-    # Check if the old numbers of SelectField has changed i.e from 3 to 4
-
-    old = len(menu_item_ingredients)
-    new = len(ingredients)
-
-    if old != new and len(ingredients) != 1:
-
-        # Add the new Fields
-
-        for i in range(old, new):
-
-            # Query for the ids of the weight, ingredients and add them
-
-            get_weight_id = Weight.query.filter_by(name=weight[i]).first()
-            get_ingredient_id = Ingredient.query.filter_by(
-                name=ingredients[i]).first()
-
-            if get_weight_id and get_ingredient_id:
-
-                ctr += 1
-
-                # Add the rows
-                menuItemIngredientsInsert = menuItemIngredient(
-                    menu_item_id=num, ingredient_id=get_ingredient_id.id, list_order=ctr, weight_id=get_weight_id.id, quantity=quantity[i])
-
-                db.session.add(menuItemIngredientsInsert)
-
-    db.session.commit()
+        return "Success"
 
 
 unit_map = {
@@ -321,6 +357,16 @@ def buyMenu(name):
     return "Yey"
 
 
+@app.route('/quantityError', methods=['GET', 'POST'])
+def quantityError():
+
+    error = request.args.get('error')
+    num = request.args.get('num')
+    return render_template('popupDelete.html', error=error, num=num)
+
+# TODO: Add quantity validation to this page.
+
+
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
 def create():
@@ -352,7 +398,19 @@ def create():
                 # cost.add(float(value))
                 ingredients_name.append(value)
             elif key.startswith('quantity-field-') or key == 'quantity':
-                quantity.append(value)
+
+                try:
+                    num = float(value)
+                    quantity.append(value)
+                except ValueError:
+                    num = f"{value}"
+                    message = f"Quantity field must only numbers and should not contain any letters: {num}"
+                    return render_template('create.html', error2=message, form=form, error="")
+                except TypeError:
+                    num = f"{value}"
+                    message = f"Quantity field must only numbers and should not contain any letters: {num}"
+                    return render_template('create.html', error2=message, form=form, error="")
+
             elif key.startswith('weight-field-') or key == 'weight':
                 weight.append(value)
 
@@ -396,8 +454,24 @@ def create():
             db.session.commit()
 
         return redirect(url_for('recipes'))
+    elif form.validate_on_submit() == False:
+        ic("errors")
 
-    return render_template('create.html', form=form, error="")
+        for key, value in request.form.items():
+            if key.startswith('quantity-field-') or key == 'quantity':
+
+                try:
+                    num = float(value)
+                except TypeError:
+                    num = f"{value}"
+                    message = f"Quantity field must only numbers and should not contain any letters: {num}"
+                    return render_template('create.html', error2=message, form=form, error="")
+                except ValueError:
+                    num = f"{value}"
+                    message = f"Quantity field must only numbers and should not contain any letters: {num}"
+                    return render_template('create.html', error2=message, form=form, error="")
+
+    return render_template('create.html', form=form, error="", error2="")
 
 
 @app.route("/dashboard", methods=['GET', 'POSTS'])
@@ -524,15 +598,17 @@ def edit(num):
                     break
 
                 if key.startswith('ingredients-field-') or key == 'ingredients':
-                    # cost.add(float(value))
                     ingredients_name.append(value)
                 elif key.startswith('quantity-field-') or key == 'quantity':
                     quantity.append(value)
+
                 elif key.startswith('weight-field-') or key == 'weight':
                     weight.append(value)
 
             recipe = request.form.get('recipe')
             desc = request.form.get('desc')
+            ic(quantity)
+
             cost = updateQuery(ingredients_name, quantity,
                                weight, recipe, desc, num, button_value)
 
@@ -541,7 +617,6 @@ def edit(num):
             # Get the key-pair value for the Ingredients field but only the value for other fieds
             for key, value in request.form.items():
                 if key.startswith('ingredients-field-') or key == 'ingredients':
-                    # cost.add(float(value))
                     ingredients_name.append(value)
                 elif key.startswith('quantity-field-') or key == 'quantity':
                     quantity.append(value)
@@ -550,10 +625,26 @@ def edit(num):
 
             recipe = request.form.get('recipe')
             desc = request.form.get('desc')
+            ic(quantity)
             cost = updateQuery(ingredients_name, quantity,
                                weight, recipe, desc, num, button_value)
+        if cost == 'Success':
 
-        return redirect(url_for('dashboard', message="Form submitted succesfully"))
+            return redirect(url_for('dashboard', message="Form submitted succesfully"))
+        else:
+            return redirect(url_for('quantityError', error=cost, num=num))
+    elif request.method == 'POST' and form.validate_on_submit() == False:
+
+        first_box = []
+        for key, value in request.form.items():
+            if key.startswith('quantity-field-') or key == 'quantity':
+                first_box.append(value)
+
+        error_messages = check_Quantity(first_box)
+        if error_messages is not None:
+            ic(error_messages)
+            # redirect to error page if any errors occurred
+            return redirect(url_for('quantityError', error=error_messages, num=num))
 
     return render_template('editRecipe.html', form=form, list_length=len(get_ingredients), num=num)
 

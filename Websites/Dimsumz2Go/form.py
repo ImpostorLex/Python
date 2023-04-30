@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, PasswordField, URLField, SelectField, TextAreaField, FloatField
-from wtforms.validators import DataRequired, Length, EqualTo
+from wtforms.validators import DataRequired, Length, EqualTo, NumberRange, Regexp
+from wtforms.validators import ValidationError
 
 
 class LoginForm(FlaskForm):
@@ -43,7 +44,7 @@ class CreateForm(FlaskForm):
         label="Select an Ingredient", validators=[DataRequired()])
 
     quantity = FloatField("Quantity", validators=[
-                          DataRequired()], render_kw={"placeholder": "1"})
+                          DataRequired(), NumberRange(min=1, message='Please enter a valid number')], render_kw={"placeholder": "1"})
 
     weight = SelectField(
         label="Select an Ingredient", validators=[DataRequired()], choices=[('oz', 'oz'), ('lb', 'lb'), ('g', 'g'), ('kg', 'kg')])

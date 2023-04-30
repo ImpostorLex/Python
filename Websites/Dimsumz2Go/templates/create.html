@@ -104,6 +104,16 @@
                                     Ingredient</button>
                             </div>
 
+
+                            <div class="col-md-12">
+                                <div class="text-left">
+                                    <button type="button" value="" id="reset-button"
+                                        class="btn btn-outline-success my-3 mx-auto">Reset added Fields
+                                    </button>
+                                </div>
+
+                            </div>
+
                             <br>
                             <div class="col-12">
                                 {{ form.instructions.label }}
@@ -122,6 +132,9 @@
                                     class="btn btn-outline-danger my-3 mx-auto">Submit</button>
                             </div>
                         </form>
+                        {% if error2 %}
+                        <p style="color:red" class="text-center"><strong>{{ error2 }}</strong></p>
+                        {% endif %}
 
                     </div>
                 </div>
@@ -156,58 +169,6 @@
     </div>
 
 
-
-    <!-- <script>
-        const myButton = document.getElementById("my-button");
-        const selectBox = document.getElementById("ingredients-field");
-        const quantityField = document.getElementById("quantity-field");
-        const weightField = document.getElementById("weight-field");
-        const selectBoxContainer = document.getElementById("select-box-container");
-        const intBoxContainer = document.getElementById("int-select-container");
-
-        const form = document.getElementById("my-form");
-        let selectBoxCount = 1;
-
-        myButton.addEventListener("click", function () {
-            // create a new SelectField
-            const newSelectBox = selectBox.cloneNode(true);
-            newSelectBox.id = `ingredients-field-${selectBoxCount}`;
-            newSelectBox.name = `ingredients-field-${selectBoxCount}`;
-
-            // create a new IntegerField
-            const newQuantityField = quantityField.cloneNode(true);
-            newQuantityField.id = `quantity-field-${selectBoxCount}`;
-            newQuantityField.name = `quantity-field-${selectBoxCount}`;
-
-            // create a new SelectField
-            const newWeightField = weightField.cloneNode(true);
-            newWeightField.id = `weight-field-${selectBoxCount}`;
-            newWeightField.name = `weight-field-${selectBoxCount}`;
-
-            // create a new label for the SelectField
-            const selectBoxLabel = document.createElement("label");
-            selectBoxLabel.textContent = `Select an Ingredient ${selectBoxCount}`;
-
-            // create a new label for the IntegerField
-            const quantityLabel = document.createElement("label");
-            quantityLabel.textContent = `Quantity ${selectBoxCount}`;
-
-            // append the new fields to the form
-            selectBoxContainer.appendChild(selectBoxLabel);
-            selectBoxContainer.appendChild(newSelectBox);
-
-            intBoxContainer.appendChild(quantityLabel);
-            intBoxContainer.appendChild(newQuantityField);
-
-            intBoxContainer.appendChild(newWeightField);
-
-            // increment the counter
-            selectBoxCount++;
-        });
-
-    </script> -->
-
-
     <script>
         const myButton = document.getElementById("my-button");
         const selectBox = document.getElementById("ingredients-field-");
@@ -239,10 +200,15 @@
             // create a new label for the SelectField
             const selectBoxLabel = document.createElement("label");
             selectBoxLabel.textContent = `Select an Ingredient ${selectBoxCount}`;
+            selectBoxLabel.setAttribute("id", `selectBoxLabel-${selectBoxCount}`);
+
 
             // create a new label for the IntegerField
             const quantityLabel = document.createElement("label");
             quantityLabel.textContent = `Quantity ${selectBoxCount}`;
+            quantityLabel.setAttribute("id", `quantityLabel-${selectBoxCount}`);
+
+
 
             // append the new fields to the form
             selectBoxContainer.appendChild(selectBoxLabel);
@@ -276,6 +242,66 @@
             // increment the counter
             selectBoxCount++;
         });
+
+    </script>
+
+    <script>
+        const removeButton = document.getElementById('reset-button');
+
+        removeButton.addEventListener('click', () => {
+
+            console.log(`hello ${selectBoxCount}`);
+
+            let originalSelectBoxCount = selectBoxCount;
+
+            for (var i = 1; i < originalSelectBoxCount; i++) {
+                console.log(`originialSelectBoxCount value: ${originalSelectBoxCount} and value of i is ${i}`);
+
+                var dynamicIngredients = document.getElementById(`ingredients-field-${i}`);
+                var dynamicQuantity = document.getElementById(`quantity-field-${i}`);
+                var dynamicWeight = document.getElementById(`weight-field-${i}`);
+
+                try {
+                    // Remove the labels
+                    var selectBoxLabelToRemove = document.getElementById(`selectBoxLabel-${i}`);
+                    var quantityLabelToRemove = document.getElementById(`quantityLabel-${i}`);
+
+                    selectBoxLabelToRemove.parentNode.removeChild(selectBoxLabelToRemove);
+                    quantityLabelToRemove.parentNode.removeChild(quantityLabelToRemove);
+
+                    if (selectBoxLabelToRemove) {
+                        selectBoxLabelToRemove.remove();
+                    }
+
+                    if (quantityLabelToRemove) {
+                        quantityLabelToRemove.remove();
+                    }
+                } catch (error) {
+                    console.log(`Error: ${error}`);
+                }
+
+                if (dynamicIngredients) {
+                    dynamicIngredients.name = "";
+                    dynamicIngredients.remove();
+
+                }
+
+                if (dynamicQuantity) {
+                    dynamicQuantity.name = "";
+                    dynamicQuantity.remove();
+
+                }
+
+                if (dynamicWeight) {
+                    dynamicWeight.name = "";
+                    dynamicWeight.remove();
+
+                }
+            }
+            // Reset the value of the counter
+            selectBoxCount = parseInt(document.querySelectorAll('select[id^="ingredients-field-"]').length) + 1;
+        });
+
 
     </script>
 
