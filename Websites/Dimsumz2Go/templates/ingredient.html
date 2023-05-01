@@ -88,6 +88,10 @@
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-outline-warning btn-lg"><i
                                     class="fa fa-search"></i></button>
+
+                            <button type="button" class="btn btn-outline-warning btn-lg"><a
+                                    href="{{ url_for('inventory') }}"><i class="fa fa-refresh"></i></a></button>
+
                         </div>
                     </div>
                 </form>
@@ -155,9 +159,14 @@
     <script>
         function showPopup(name) {
             // Set the href attribute of the 'Yes, I am sure' button to include the name variable
-            var checkbox = document.querySelector('#deleteRelatedMenus');
+            var checkbox = document.getElementById('deleteRelatedMenus');
             var deleteButton = document.querySelector('#popup .btn-danger a');
-            deleteButton.href = "/deleteIngredient/" + name + "?deleteRelatedMenus=" + checkbox;
+            console.log(checkbox.checked)
+            deleteButton.href = "/deleteIngredient/" + name + "?deleteRelatedMenus=" + checkbox.checked;
+
+            checkbox.addEventListener('click', function () {
+                deleteButton.href = "/deleteIngredient/" + name + "?deleteRelatedMenus=" + checkbox.checked;
+            });
 
             // Show the modal
             var popup = new bootstrap.Modal(document.getElementById('popup'));

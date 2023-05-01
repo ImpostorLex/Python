@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from icecream import ic
@@ -21,7 +21,6 @@ hashing = Hashing(app)
 db = SQLAlchemy(app)
 user_type = 0
 
-# TODO: added search functionality ot the Inventoryhabit
 
 # -------------------------------- Database Design -------------------------------- #
 
@@ -292,9 +291,13 @@ def gramToOriginal(weight_type, remaining):
         return "404"
 
 
+def ingredient_to_dict(ingredient):
+    return {'id': ingredient.id, 'name': ingredient.name, 'quantity': ingredient.quantity, 'cost': ingredient.cost, 'weight_id': ingredient.weight_id}
+
 # ---------------------------- FLASK FUNCTIONS ----------------------------
 
 # Create Recipe Form
+
 
 @app.route('/buyMenu/<string:name>')
 def buyMenu(name):
@@ -513,9 +516,11 @@ def deleteIngredient(name):
     _ingredient = Ingredient.query.filter_by(name=name).first()
 
     deleted_related_menus = request.args.get('deleteRelatedMenus')
+    print("deleted_related_menus:", deleted_related_menus)
 
     if _ingredient:
-        if deleted_related_menus:
+
+        if deleted_related_menus == 'true':
 
             # Check if ingredient is associated with a menu item and delete them
             _menuItemIngredient = menuItemIngredient.query.filter_by(
@@ -529,16 +534,19 @@ def deleteIngredient(name):
                     _image = Image.query.filter_by(
                         menu_item_id=item.menu_item_id).first()
 
-                    db.session.delete(_image)
                     db.session.delete(item)
-                    db.session.delete(_menuItem)
+                 # Check if _menuItem is not None before deleting it
+                    if _menuItem and _image:
+                        db.session.delete(_menuItem)
+                        db.session.delete(_image)
 
             # Delete the ingredient
             db.session.delete(_ingredient)
             db.session.commit()
             message = "Ingredient deleted successfully"
-        else:
-            message = "Please delete the menu items associated first before deleting the ingredient"
+
+        elif deleted_related_menus == 'false':
+            message = "Delete the menu items associated first before deleting the ingredient or you can the checkbox to do this automatically"
     else:
         message = "Ingredient not found"
 
@@ -797,7 +805,7 @@ def inventory():
     get_ingredients = Ingredient.query.all()
 
     weight_list = []
-
+    weight_list2 = []
     for i in get_ingredients:
 
         weight_cat = Weight.query.filter_by(id=i.weight_id).first()
@@ -805,11 +813,27 @@ def inventory():
 
     message = request.args.get('message')
 
-    # For deleteIngredients
-
+    # TODO: For deleteIngredients
     is_associated = request.args.get('is_associated')
 
-    return render_template('ingredient.html', ingre=get_ingredients, zip=zip, weight_list=weight_list, message=message)
+    like_search_term = request.args.get('like_search_term')
+    is_query = request.args.get('is_query')
+
+    # For the ingredient being specifically queried
+    get_matching_ingredients = Ingredient.query.filter(
+        Ingredient.name.like(f"{like_search_term}%")).all()
+
+    if get_matching_ingredients:
+        for i in get_matching_ingredients:
+            weight_ids = Weight.query.filter_by(id=i.weight_id).first()
+            weight_list2.append(weight_ids.name)
+        return render_template('ingredient.html', ingre=get_matching_ingredients, zip=zip, message=message, weight_list=weight_list2)
+    elif not get_matching_ingredients and is_query == '1':
+        ic("Is query")
+        message = "It looks like that Ingredient does not exists please try again"
+        return render_template('ingredient.html', ingre=get_ingredients, zip=zip, weight_list=weight_list, message=message)
+    else:
+        return render_template('ingredient.html', ingre=get_ingredients, zip=zip, weight_list=weight_list, message=message)
 
 
 @app.route('/searchIngredient', methods=['POST', 'GET'])
@@ -818,12 +842,11 @@ def searchIngredient():
     nice = request.form.get('search_term')
 
     for char in nice:
-        if not char.isalpha():
-
+        if not char.isalnum():
             error = "Only letters and numbers are allowed, please try again"
             return redirect(url_for('inventory', message=error))
-    # TODO: continue this
-    return "Yey"
+
+    return redirect(url_for('inventory', like_search_term=nice, is_query=1))
 
 
 @app.route('/item/<int:num>', methods=['GET', 'POST'])
