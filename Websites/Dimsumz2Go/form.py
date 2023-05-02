@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, PasswordField, URLField, SelectField, TextAreaField, FloatField
+from wtforms import StringField, SelectField, PasswordField, DateField, URLField, SelectField, TextAreaField, FloatField
 from wtforms.validators import DataRequired, Length, EqualTo, NumberRange, Regexp
 from wtforms.validators import ValidationError
 
@@ -66,3 +66,8 @@ class IngredientForm(FlaskForm):
 
     weight = SelectField(
         label="Weight Type", validators=[DataRequired()], choices=[('oz', 'oz'), ('lb', 'lb'), ('g', 'g'), ('kg', 'kg')])
+
+    date_added = DateField('Date Added: YYYY/MM/DD',
+                           validators=[DataRequired()])
+    expiration_date = DateField(
+        'Expiration Date: YYYY/MM/DD', validators=[DataRequired()])

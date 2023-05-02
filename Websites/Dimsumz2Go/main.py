@@ -7,7 +7,7 @@ from form import LoginForm, RegistrationForm, CreateForm, IngredientForm
 from time import sleep
 from functools import wraps
 from sqlalchemy import Date
-import datetime
+from datetime import datetime
 from itertools import zip_longest
 
 
@@ -79,6 +79,19 @@ class Sale(db.Model):
         'menu_item.id'), nullable=False)
     date_added = db.Column(Date, nullable=False)
     profit = db.Column(db.Float, nullable=False)
+
+
+class ingredientDateExpiration(db.Model):
+
+    __tablename__ = 'ingredientDateExpiration'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    ingredient_id = db.Column(db.Integer, db.ForeignKey(
+        'ingredient.id'), nullable=True)
+    quantity_added = db.Column(db.Float(20), nullable=False)
+    date_added = db.Column(db.Date, nullable=False,
+                           default=datetime.utcnow().date())
+    date_expiration = db.Column(
+        db.Date, nullable=False, default=datetime.utcnow().date())
 
 
 class Ingredient(db.Model):
@@ -749,34 +762,65 @@ def index():
 @app.route('/create-ingredient', methods=['GET', 'POST'])
 def addIngredients():
 
+    # TODO: When Ingredient is deleted, delete all items also in ingredientExpiration table
+    # TODO: After done above, fix re-stocking same as above add required data ingredientExpiration
     form = IngredientForm()
 
-    if form.validate_on_submit() and request.method == 'POST':
+    if form.validate_on_submit():
 
         name = request.form.get('name')
         stock = request.form.get('stock')
         price = request.form.get('price')
         weight = request.form.get('weight')
+        date_added = datetime.strptime(
+            request.form.get('date_added'), '%Y-%m-%d')
+        expiration_date = datetime.strptime(
+            request.form.get('expiration_date'), '%Y-%m-%d')
 
-        if price.isalpha() or stock.isalpha() or float(price) <= 0 or float(stock) <= 0:
-            ic("true")
+        # Check if ingredient name already exists
+        ingredient_is_exists = Ingredient.query.filter_by(name=name).first()
+        try:
+            if price.isalpha() or stock.isalpha() or float(price) <= 0 or float(stock) <= 0:
+                error = "Price and Quantity should be numbers only and should not be less than or equals to zero!"
+                return redirect(url_for('addIngredients', error=error))
+            elif ingredient_is_exists:
+                error = "Ingredient (name) already exists, please try again."
+                return redirect(url_for('addIngredients', error=error))
+            elif date_added > expiration_date:
+                error = "Date expiration cannot be earlier than date added or should not be empty"
+                return redirect(url_for('addIngredients', error=error))
+            else:
+                weight_id = Weight.query.filter_by(name=weight).first()
+
+                # create a instance first of Ingredient since the date_expiration_id value does not exist yet.
+                new_ingredient = Ingredient(name=name, quantity=stock,
+                                            cost=price, weight_id=weight_id.id)
+                db.session.add(new_ingredient)
+                db.session.commit()
+
+                # Insert the expiration date to the table to create an id for the Ingredient table
+                new_date_expiration = ingredientDateExpiration(
+                    ingredient_id=new_ingredient.id, quantity_added=stock, date_added=date_added, date_expiration=expiration_date)
+
+                # Commit the changes
+                db.session.add(new_date_expiration)
+                db.session.commit()
+
+        except ValueError:
             error = "Price and Quantity should be numbers only and should not be less than or equals to zero!"
             return redirect(url_for('addIngredients', error=error))
-        else:
-            weight_id = Weight.query.filter_by(name=weight).first()
 
-            ingredient = Ingredient(name=name, quantity=stock,
-                                    cost=price, weight_id=weight_id.id)
+        return redirect(url_for('inventory'))
 
-            db.session.add(ingredient)
-            db.session.commit()
-
-            return redirect(url_for('inventory'))
     elif form.validate_on_submit() == False and request.method == 'POST':
         stock = request.form.get('stock')
         price = request.form.get('price')
+        date_added = datetime.strptime(
+            request.form.get('date_added'), '%Y-%m-%d')
+        expiration_date = datetime.strptime(
+            request.form.get('expiration_date'), '%Y-%m-%d')
+
         if price.isalpha() or stock.isalpha() or float(price) <= 0 or float(stock) <= 0:
-            ic("true")
             error = "Price and Quantity should be numbers only and should not be less than or equals to zero!"
             return redirect(url_for('addIngredients', error=error))
 
