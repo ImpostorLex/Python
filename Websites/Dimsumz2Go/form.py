@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, PasswordField, DateField, URLField, SelectField, TextAreaField, FloatField
+from wtforms import StringField, SelectField, PasswordField, DateField, URLField, SelectField, TextAreaField, FloatField, FileField
 from wtforms.validators import DataRequired, Length, EqualTo, NumberRange, Regexp
 from wtforms.validators import ValidationError
+from flask_wtf.file import FileAllowed, FileRequired
 
 
 class LoginForm(FlaskForm):
@@ -38,8 +39,9 @@ class CreateForm(FlaskForm):
                          DataRequired(), Length(min=3, max=32)], render_kw={"placeholder": "Burger"})
     desc = TextAreaField(label="Title Description", validators=[
         DataRequired(), Length(min=10, max=138)], render_kw={"placeholder": "A Krabby Patty made by spongebob", "cols":  50})
-    url = URLField(label='URL of the image', validators=[
-                   DataRequired(), Length(min=20, max=250)], render_kw={"placeholder": "http://krustykrab.com/burger.png"})
+
+    url = FileField('Upload Image File')
+
     ingredients = SelectField(
         label="Select an Ingredient", validators=[DataRequired()])
 

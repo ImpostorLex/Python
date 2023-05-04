@@ -9,12 +9,14 @@ from functools import wraps
 from sqlalchemy import Date
 from datetime import datetime
 from itertools import zip_longest
-
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///dimsumz2go.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your secret key hehelol'
+app.config['UPLOAD_FOLDER'] = 'static/recipesImgs'
 login_manager = LoginManager()
 login_manager.init_app(app)
 hashing = Hashing(app)
@@ -128,6 +130,21 @@ class menuItemIngredient(db.Model):
 
 # -------------------------------- User Defined Functions -------------------------------- #
 db.create_all()
+
+
+def isImage(img):
+
+    allowed_filetype = ['jpg', 'png']
+    file_ext = img.data.rsplit('.', 1)[1]
+    if file_ext in allowed_filetype:
+
+        # Save the image to the file path.
+        filename = secure_filename(img.data.filename)
+        img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        return "Yes"
+    else:
+        return 'Error'
 
 
 def check_Quantity(items):
@@ -403,8 +420,8 @@ def create():
         # Extract Ingredients
         form.ingredients.choices.append(ingredient.name)
 
-    if request.method == 'POST' and form.validate_on_submit():
-
+    if form.validate_on_submit():
+        ic("true")
         cost = set()
         quantity = []
         weight = []
@@ -436,6 +453,7 @@ def create():
 
             # First insert a row into the menuItem table
             recipe = request.form.get('recipe')
+            ic(recipe)
             desc = request.form.get('desc')
             cost = sum(cost)
             menu_item = menuItem(name=recipe, desc=desc, cost=cost)
@@ -444,10 +462,16 @@ def create():
 
             # Get the id of the inserted menu
             menu_id = menu_item.id
-            ic(menu_id)
+            ic(f"{menu_id} what")
 
             # Insert url and instruction and as well as the menu_id as the foreign key to the image table
-            url = request.form.get('url')
+            url2 = form.url
+            url = form.url.data
+
+            is_valid_filetype = isImage(url2)
+
+            if is_valid_filetype == "Error":
+                return redirect(url_for('create', error="File type is invalid only images."))
             instructions = request.form.get('instructions')
             image = Image(menu_item_id=menu_id, path=url,
                           instructions=instructions)
@@ -470,9 +494,9 @@ def create():
                 db.session.commit()
 
             return redirect(url_for('recipes'))
-    elif request.method == 'POST' and form.validate_on_submit() == False:
-        first_field = []
 
+    elif form.validate_on_submit() == False:
+        first_field = []
         for key, value in request.form.items():
             if key.startswith('quantity-field-') or key == 'quantity':
                 first_field.append(value)
@@ -481,7 +505,8 @@ def create():
         if has_errors:
             return redirect(url_for('quantityError', error=has_errors))
 
-    return render_template('create.html', form=form, error="", error2="")
+    error_msgs = request.args.get('error')
+    return render_template('create.html', form=form, error=error_msgs, error2="")
 
 
 @app.route("/dashboard", methods=['GET', 'POSTS'])

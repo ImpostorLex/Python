@@ -62,7 +62,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h1 class="register-logo text-center">Create A Recipe</h1>
-                        <form method="POST" action="{{ url_for('create') }}" id="my-form">
+                        <form method="POST" enctype="multipart/form-data" action="{{ url_for('create') }}" id="my-form">
                             {{ form.csrf_token }}
                             <div class="col-md-12">
                                 {{ form.recipe.label}}
