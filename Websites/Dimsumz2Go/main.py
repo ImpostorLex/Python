@@ -16,7 +16,8 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///dimsumz2go.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your secret key hehelol'
-app.config['UPLOAD_FOLDER'] = 'static/recipesImgs'
+IMAGE_FOLDER = app.config['UPLOAD_FOLDER'] = os.path.abspath(
+    'static/recipesImgs')
 login_manager = LoginManager()
 login_manager.init_app(app)
 hashing = Hashing(app)
@@ -133,16 +134,16 @@ db.create_all()
 
 
 def isImage(img):
-
-    allowed_filetype = ['jpg', 'png']
-    file_ext = img.data.rsplit('.', 1)[1]
-    if file_ext in allowed_filetype:
-
-        # Save the image to the file path.
+    allowed_filetype = ['jpg', 'png', 'jpeg']
+    if img.data and '.' in img.data.filename and img.data.filename.rsplit('.', 1)[1] in allowed_filetype:
+        folder_path = os.path.join(app.static_folder, 'recipesImgs')
+        os.makedirs(folder_path, exist_ok=True)
         filename = secure_filename(img.data.filename)
-        img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        filepath = os.path.join(folder_path, filename)
+        img.data.save(filepath)
 
-        return "Yes"
+        # return only the filename
+        return filename
     else:
         return 'Error'
 
@@ -192,7 +193,7 @@ def check_user(func):
     return wrapper
 
 
-def updateQuery(ingredients, quantity, weight, recipe, desc, num, isPushed):
+def updateQuery(ingredients, quantity, weight, recipe, desc, num, isPushed, url, instruc):
 
     # Check for quantity errors first
     error_messages = check_Quantity(quantity)
@@ -230,8 +231,10 @@ def updateQuery(ingredients, quantity, weight, recipe, desc, num, isPushed):
 
         # Second Query the Image table
         image = Image.query.filter_by(menu_item_id=num).first()
-        image.path = request.form.get('url')
-        image.instructions = request.form.get('instructions')
+        image_path = os.path.join('recipesImgs', url)
+        db.session.add(image)
+        image.path = image_path
+        image.instructions = instruc
 
         menu_item_ingredients = menuItemIngredient.query.filter_by(
             menu_item_id=num).all()
@@ -462,18 +465,17 @@ def create():
 
             # Get the id of the inserted menu
             menu_id = menu_item.id
-            ic(f"{menu_id} what")
 
             # Insert url and instruction and as well as the menu_id as the foreign key to the image table
             url2 = form.url
-            url = form.url.data
 
             is_valid_filetype = isImage(url2)
 
             if is_valid_filetype == "Error":
                 return redirect(url_for('create', error="File type is invalid only images."))
             instructions = request.form.get('instructions')
-            image = Image(menu_item_id=menu_id, path=url,
+            image_path = os.path.join('recipesImgs', is_valid_filetype)
+            image = Image(menu_item_id=menu_id, path=image_path,
                           instructions=instructions)
             db.session.add(image)
             db.session.commit()
@@ -647,10 +649,15 @@ def edit(num):
 
             recipe = request.form.get('recipe')
             desc = request.form.get('desc')
+            upload = form.url
+            url = isImage(upload)
+
+            instruc = request.form.get('instructions')
+
             ic(quantity)
 
             cost = updateQuery(ingredients_name, quantity,
-                               weight, recipe, desc, num, button_value)
+                               weight, recipe, desc, num, button_value, url, instruc)
 
         else:
 
@@ -665,14 +672,23 @@ def edit(num):
 
             recipe = request.form.get('recipe')
             desc = request.form.get('desc')
+            upload = form.url
+            url = isImage(upload)
+
+            instruc = request.form.get('instructions')
             ic(quantity)
             cost = updateQuery(ingredients_name, quantity,
-                               weight, recipe, desc, num, button_value)
-        if cost == 'Success':
+                               weight, recipe, desc, num, button_value, url, instruc)
 
+        if url == 'Invalid':
+            error_messages = "Invalid filetype please upload images only, (jpg, jpeg, png)"
+            return redirect(url_for('edit', num=num, error_file=error_messages))
+
+        if cost == 'Success':
             return redirect(url_for('dashboard', message="Form submitted succesfully"))
         else:
             return redirect(url_for('quantityError', error=cost, num=num))
+
     elif request.method == 'POST' and form.validate_on_submit() == False:
 
         first_box = []
@@ -686,7 +702,8 @@ def edit(num):
             # redirect to error page if any errors occurred
             return redirect(url_for('quantityError', error=error_messages, num=num))
 
-    return render_template('editRecipe.html', form=form, list_length=len(get_ingredients), num=num)
+    error_msg = request.args.get('error_file')
+    return render_template('editRecipe.html', form=form, list_length=len(get_ingredients), num=num, error=error_msg)
 
 
 @app.route("/editIngredient/<string:name>", methods=['POST', 'GET'])
@@ -1022,7 +1039,7 @@ def recipes():
     menus = menuItem.query.all()
     imgs = Image.query.all()
 
-    return render_template("recipes.html", menu=menus, img=imgs, zip=zip)
+    return render_template("recipes.html", menu=menus, img=imgs, zip=zip, image_path=IMAGE_FOLDER)
 
 
 @app.route("/unauthorized", methods=['GET', 'POST'])
