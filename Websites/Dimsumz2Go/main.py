@@ -139,11 +139,12 @@ def isImage(img):
         folder_path = os.path.join(app.static_folder, 'recipesImgs')
         os.makedirs(folder_path, exist_ok=True)
         filename = secure_filename(img.data.filename)
-        filepath = os.path.join(folder_path, filename)
+        filename_without_prefix = filename.split('/')[-1]
+        filepath = os.path.join(folder_path, filename_without_prefix)
         img.data.save(filepath)
 
         # return only the filename
-        return filename
+        return filename_without_prefix
     else:
         return 'Error'
 
@@ -608,7 +609,6 @@ def edit(num):
     # Set pre-set value using the to be edit Recipe
 
     img = Image.query.filter_by(id=num).first()
-    form.url.data = img.path
     form.instructions.data = img.instructions
 
     menu = menuItem.query.filter_by(id=num).first()
@@ -649,15 +649,16 @@ def edit(num):
 
             recipe = request.form.get('recipe')
             desc = request.form.get('desc')
-            upload = form.url
-            url = isImage(upload)
 
+            upload = form.url
+
+            url = isImage(upload)
             instruc = request.form.get('instructions')
 
             ic(quantity)
 
             cost = updateQuery(ingredients_name, quantity,
-                               weight, recipe, desc, num, button_value, url, instruc)
+                               weight, recipe, desc, num, button_value, filename, instruc)
 
         else:
 
@@ -672,7 +673,9 @@ def edit(num):
 
             recipe = request.form.get('recipe')
             desc = request.form.get('desc')
+
             upload = form.url
+
             url = isImage(upload)
 
             instruc = request.form.get('instructions')
