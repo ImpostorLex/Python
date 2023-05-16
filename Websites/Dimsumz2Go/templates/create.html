@@ -96,6 +96,13 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-12">
+                                <div class="quantity-container">
+                                    {{ form.price.label }}
+                                    {{ form.price(class_="textarea-conf") }}
+                                </div>
+                            </div>
+
 
                             <div class="text-left">
                                 <button type="button" value="Add" id="my-button"
@@ -186,7 +193,7 @@
             const newSelectBox = selectBox.cloneNode(true);
             newSelectBox.id = `ingredients-field-${selectBoxCount}`;
             newSelectBox.name = `ingredients-field-${selectBoxCount}`;
-            newSelectBox.value = "";
+
 
             // create a new IntegerField
             const newQuantityField = quantityField.cloneNode(true);

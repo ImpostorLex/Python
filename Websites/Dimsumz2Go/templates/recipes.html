@@ -83,20 +83,20 @@
                             </a>
                             <div class="card-body">
 
-                                <h5 class="card-title custom-title-truncate ">{{ m.name }}</h5>
+                                <h5 class="card-title custom-title-truncate" id="test">{{ m.name }}</h5>
 
                                 <p class="card-text custom-truncate">{{ m.desc }}</p>
                                 <button data-bs-toggle="modal" style="cursor: pointer;" data-bs-target="#popup"
                                     class="btn-position my-1 mx-auto btn btn-danger"
-                                    onclick="showPopup('{{m.name}}')">Buy
-                                    for ₱{{ m.cost}}</button>
+                                    onclick="showPopup('{{ m.name }}')">Buy
+                                    for ₱{{ m.profit }}</button>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
 
 
-                    <div class="col-md-6 col-lg-4 col-sm-12" style="padding: 20px 150px  20px 150px;">
+                    <div class=" col-md-6 col-lg-4 col-sm-12" style="padding: 20px 150px  20px 150px;">
                         <div class="card custom-card">
                             <a href=" {{ url_for('create') }}">
 
@@ -105,7 +105,8 @@
                             </a>
                             <div class="card-body">
                                 <h5 class="card-title custom-title-truncate">Add Recipe</h5>
-                                <p class="card-text custom-truncate">You can add a recipe by clicking the image above.
+                                <p class="card-text custom-truncate">You can add a recipe by clicking the
+                                    image above.
                                 </p>
                             </div>
                         </div>
@@ -127,13 +128,13 @@
                     How many order?
                     <br>
                     <div class="input-group">
-                        <input type="number" value="1" min="0" step="1" class="form-control" id="amountInput">
+                        <input type="number" value="1" min="1" step="1" class="form-control" id="amountInput">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button href="" type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                         id="cancelBtn">Cancel</button>
-                    <button type="button" class="btn btn-danger"><a style="color:white" href="">Make
+                    <button type="button" class="btn btn-danger"><a id="makePurchaseBtn" style="color:white">Make
                             purchase!</a></button>
                 </div>
             </div>
@@ -142,45 +143,36 @@
 
 
     <script>
-        function showPopup(name) {
+        var itemName;
 
-            // Set the href attribute of the 'Yes, I am sure' button to include the name variable
-            var buyButton = document.querySelector('#popup .btn-danger a');
-            var quanBox = document.getElementById("amountInput");
-            buyButton.href = "/buyMenu/" + name + "?quantity=" + quanBox.value;
+        function showPopup(name) {
 
             // Show the modal
             var popup = new bootstrap.Modal(document.getElementById('popup'));
             popup.show();
+            itemName = name;
         }
+
+        var purchaseButton = document.getElementById('makePurchaseBtn');
+        purchaseButton.addEventListener('click', function () {
+            var buyButton = document.getElementById('makePurchaseBtn')
+            var quanBox = document.getElementById("amountInput");
+            var quantity = quanBox.value;
+            console.log(quantity)
+
+            if (quantity <= 0) { // validate the quantity
+                alert("Please enter a valid quantity.");
+                return; // do not continue if the quantity is not valid
+            }
+            buyButton.href = "/buyMenu/" + itemName + "?quantity=" + quantity;
+        });
 
         document.getElementById("cancelBtn").addEventListener("click", function () {
             var modalBackdrop = document.querySelector(".modal-backdrop");
             modalBackdrop.parentNode.removeChild(modalBackdrop);
             $('#amountInput').val(1);
         });
-
     </script>
-
-    <!-- Incrementor and decrementor for the quantity -->
-    <script>
-        document.querySelectorAll('.up-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const menuId = button.getAttribute('data-menu');
-                const menuQuantity = parseInt(localStorage.getItem(`menu-${menuId}`)) || 0;
-                localStorage.setItem(`menu-${menuId}`, menuQuantity + 1);
-            });
-        });
-
-        document.querySelectorAll('.down-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const menuId = button.getAttribute('data-menu');
-                const menuQuantity = parseInt(localStorage.getItem(`menu-${menuId}`)) || 0;
-                localStorage.setItem(`menu-${menuId}`, Math.max(menuQuantity - 1, 0));
-            });
-        });
-    </script>
-
 
 
 

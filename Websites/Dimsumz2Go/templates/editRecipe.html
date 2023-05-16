@@ -97,6 +97,13 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-12">
+                                <div class="quantity-container">
+                                    {{ form.price.label }}
+                                    {{ form.price(class_="textarea-conf") }}
+                                </div>
+                            </div>
+
 
                             <div class="col-md-12">
                                 <div class="text-left">
@@ -135,9 +142,6 @@
                                     class="btn btn-outline-danger my-3 mx-auto">Submit</button>
                             </div>
                         </form>
-                        {% if error %}
-                        <p> {{ error }}</p>
-                        {% endif %}
                     </div>
                 </div>
             </div>

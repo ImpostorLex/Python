@@ -167,6 +167,12 @@ hr {
     left: 10px;
 }
 
+.chart-container {
+    height: 350px;
+    width: 75%;
+    /* Adjust the height value as desired */
+}
+
 @media (max-width: 768px) {
 
     .textarea-conf {
@@ -187,6 +193,7 @@ hr {
     bottom: 0;
 
 }
+
 
 
 

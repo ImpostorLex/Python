@@ -76,6 +76,7 @@
         <div class="row">
             <div class="col-md-3"></div>
             <div class="col-md-6">
+                <a href="{{ url_for('recipes') }}"><i class="fa-solid fa-arrow-left"> Back</i></a>
                 <h1 class="text-center" style="font-size:3.75rem;">Instructions</h1>
                 <br>
                 <p style="font-size:1.75rem;">This recipe requires the following:</p>
@@ -90,10 +91,9 @@
                 <p style="font-size:1.50rem;">{{ img.instructions }}
                 </p>
 
-                <a href="{{ url_for('edit', num=num ) }}" class=" text-right">Edit</a>
+                <a href="{{ url_for('edit', num=num ) }}" class=" text-right">Edit |</a>
                 <a data-bs-toggle="modal" style="cursor: pointer;" data-bs-target="#popup" id='delete-btn'
                     class="text-right">Delete</a>
-
             </div>
             <div class="col-md-3"></div>
         </div>

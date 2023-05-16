@@ -62,10 +62,12 @@
                 <div class="card">
                     <div class="card-body" style="padding: 20px">
                         {% if is_missing == 'missing' %}
-                        <h5 style="font-size: 3.5rem; color:red;" class="card-title custom-title-truncate">
+                        <h5 style="font-size: 3.5rem; font-weight:900; color:red;"
+                            class="card-title custom-title-truncate">
                             Failure!</h5>
                         <p style="font-size: 1.5rem;" class="card-text custom-truncate">
-                            Oops, it seems like you are lacking in quantity of ingredients</p>
+                            Oops, it seems like you are lacking in quantity of ingredients, here are the ingredients
+                            missing</p>
                         <br>
                         <table class="table table-bordered" style="max-width: 100%;">
                             <thead class="table-dark">
@@ -77,12 +79,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for i, q, w in zip(missing_ingre, missing_qty, missing_weight) %}
+                                {% for item in missing_list %}
                                 <tr>
                                     <th scope="row">{{ loop.index }}</th>
-                                    <th>{{ i }}</th>
-                                    <th>{{ q }}</th>
-                                    <th>{{ w }}</th>
+                                    <th>{{ item.0 }}</th>
+                                    <th>{{ item.1 }}</th>
+                                    <th>{{ item.2 }}</th>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -90,7 +92,8 @@
                         <br>
                         <strong>Time: {{ date }} </strong>
                         {% elif is_missing == 'false' %}
-                        <h5 style="font-size: 3.5rem;" class="card-title custom-title-truncate">Success!</h5>
+                        <h5 style="font-size: 3.5rem; font-weight:900;" class="card-title custom-title-truncate">
+                            Success!</h5>
                         <p style="font-size: 1.5rem;" class="card-text">
                             Here are the remaining quantity of ingredients used</p>
                         <br>
@@ -104,12 +107,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for i, q, w in zip(missing_ingre, missing_qty, missing_weight) %}
+                                {% for item in missing_list %}
                                 <tr>
                                     <th scope="row">{{ loop.index }}</th>
-                                    <th>{{ i }}</th>
-                                    <th>{{ q }}</th>
-                                    <th>{{ w }}</th>
+                                    <th>{{ item.0 }}</th>
+                                    <th>{{ item.1 }}</th>
+                                    <th>{{ item.2 }}</th>
                                 </tr>
                                 {% endfor %}
                             </tbody>

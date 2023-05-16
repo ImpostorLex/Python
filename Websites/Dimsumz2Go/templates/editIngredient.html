@@ -65,7 +65,7 @@
 
                         <button
                             data-hover="By default this is turn on, this locks all other forms except the quantity field"
-                            type="button" id="checker" style="color:white" class="hovertext btn">Lock
+                            type="button" id="checker" style="color:white" class="hovertext btn">Restocking only mode
                             on</button>
                         <br>
                         <br>
@@ -88,6 +88,18 @@
                                 {{ form.weight.label(class_='text-right') }}
                                 {{ form.weight(class_='form-control', id='ingredients-select-box') }}
                             </div>
+
+                            <div class="form-group">
+                                {{ form.date_added.label(class_='text-right') }}
+                                {{ form.date_added(class_='form-control', id='add-date') }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form.expiration_date.label(class_='text-right') }}
+                                {{ form.expiration_date(class_='form-control', id="exp-date") }}
+                            </div>
+
+
                             {% if error %}
                             <ul class="my-2 text-danger text-center" style="list-style: none;">
                                 <li>{{ error }}</li>
@@ -108,7 +120,7 @@
     <br>
     <div class="container-fluid fixed-footer" style="background-color: #c3282c;">
         <div class="row justify-content-center">
-            <div class="col-md-12 text-center" style="padding-top: 40px;">
+            <div class="col-md-12 text-center" style="padding-top: 20px;">
                 <h2 class="footer-heading"><a href="#" class="logo" style="color:white">Dimsumz2Go.com</a>
                 </h2>
                 <p class="menu">
@@ -135,7 +147,7 @@
         if (oneTime == 0) {
             var myButton = document.getElementById("checker");
             myButton.classList.add("btn-danger");
-            myButton.innerHTML = "Lock fields";
+            myButton.innerHTML = "Restocking only mode on";
 
             document.getElementById("recipe").disabled = true;
             document.getElementById("price").disabled = true;
@@ -151,20 +163,24 @@
             if (!myButton.classList.contains("btn-primary")) {
                 myButton.classList.remove("btn-danger");
                 myButton.classList.add("btn-primary");
-                myButton.innerHTML = "Unlock fields";
+                myButton.innerHTML = "Editing fields mode";
 
                 document.getElementById("recipe").disabled = false;
                 document.getElementById("price").disabled = false;
                 document.getElementById("ingredients-select-box").disabled = false;
+                document.getElementById('add-date').disabled = true;
+                document.getElementById('exp-date').disabled = true;
             }
             else if (!myButton.classList.contains("btn-danger")) {
                 myButton.classList.remove("btn-primary");
                 myButton.classList.add("btn-danger");
-                myButton.innerHTML = "Lock fields";
+                myButton.innerHTML = "Restocking only mode on";
 
                 document.getElementById("recipe").disabled = true;
                 document.getElementById("price").disabled = true;
                 document.getElementById("ingredients-select-box").disabled = true;
+                document.getElementById('add-date').disabled = false;
+                document.getElementById('exp-date').disabled = false;
             }
 
         });
