@@ -22,7 +22,7 @@
 
     <nav class="navbar navbar-expand-lg sticky-top" style="background-color: #f55052;">
         <div class=" container-fluid">
-            <a href="{{ url_for('home') }}" class="nav-link py-3 px-2 hovertext" data-hover="Home" title=""
+            <a href="{{ url_for('dashboard') }}" class="nav-link py-3 px-2 hovertext" data-hover="Dashboard" title=""
                 data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
                 <i class="fa-solid fa-2x" style="color:white;">Dimsumz 2 Go</i>
             </a>
@@ -40,6 +40,12 @@
                         title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
                         <i class="fa-solid fa-warehouse fa-2x" style="color:white;"></i>
                     </a>
+
+                    <a href="{{ url_for('recipes') }}" class="nav-link py-3 px-2 hovertext" data-hover="Recipes"
+                        title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-utensils" style="color:white;"></i>
+                    </a>
+
 
                     <a href="{{ url_for('graphs') }}" class="nav-link py-3 px-2 hovertext" data-hover="Graphs" title=""
                         data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">

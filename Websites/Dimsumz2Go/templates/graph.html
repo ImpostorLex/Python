@@ -23,7 +23,7 @@
 
     <nav class="navbar navbar-expand-lg sticky-top" style="background-color: #f55052;">
         <div class=" container-fluid">
-            <a href="{{ url_for('home') }}" class="nav-link py-3 px-2 hovertext" data-hover="Home" title=""
+            <a href="{{ url_for('dashboard') }}" class="nav-link py-3 px-2 hovertext" data-hover="Dashboard" title=""
                 data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
                 <i class="fa-solid fa-2x" style="color:white;">Dimsumz 2 Go</i>
             </a>
@@ -37,13 +37,20 @@
                         title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
                         <i class="fa-solid fa-table-columns fa-2x" style="color:white;"></i>
                     </a>
-                    <a href="{{ url_for('inventory') }}" class="nav-link py-3 px-2 hovertext" data-hover="Graphs"
+                    <a href="{{ url_for('inventory') }}" class="nav-link py-3 px-2 hovertext" data-hover="Inventory"
                         title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
                         <i class="fa-solid fa-warehouse fa-2x" style="color:white;"></i>
                     </a>
+                    <li>
+                        <a href="{{ url_for('recipes') }}" class="nav-link py-3 px-2 hovertext active"
+                            data-hover="Recipes" title="" data-bs-toggle="tooltip" data-bs-placement="right"
+                            data-bs-original-title="Dashboard">
+                            <i class="fa-solid fa-utensils fa-2x" style="color:white;"></i>
+                        </a>
+                    </li>
 
-                    <a href="{{ url_for('graphs') }}" class="nav-link py-3 px-2 hovertext" data-hover="Graphs" title=""
-                        data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                    <a href="{{ url_for('graphs') }}" class="nav-link py-3 px-2 hovertext active" data-hover="Graphs"
+                        title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
                         <i class="fa-solid fa-chart-simple fa-2x" style="color:white;"></i>
                     </a>
 
@@ -57,86 +64,91 @@
     </nav>
 
 
-    <div class="container-fluid" id="wrapper">
+    <div class="container-fluid mt-4" id="wrapper">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 p-3 mx-auto">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                {% if total_users %}
+                                <h5 class="card-title">Total Users</h5>
+                                <p class="card-text" style="font-size: 20px;">
+                                    <i class="fas fa-users fa-lg"></i> {{ total_users }}
+                                </p>
+                                {% else %}
+                                <p class="card-text text-center">No data available for Users.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-lg-4 col-md-4 p-3  mx-auto">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                {% if total_ingredient %}
+                                <h5 class="card-title">Total Ingredients</h5>
+                                <p class="card-text" style="font-size: 20px;"> <i class="fas fa-shopping-basket"></i> {{
+                                    total_ingredient }}</p>
+                                {% else %}
+                                <p class="card-text text-center">No data available for Ingredients</p>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-4 p-3  mx-auto">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                {% if total_menu_items %}
+                                <h5 class="card-title">Total Menu Items</h5>
+                                <p class="card-text" style="font-size: 20px;"> <i class="fas fa-shopping-basket"></i> {{
+                                    total_menu_items }}</p>
+                                {% else %}
+                                <p class="card-text text-center">No data available for Menu Items</p>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
-
-            <div class="col-lg-4 col-md-4 p-3 mx-auto">
+            <div class="col-lg-6 col-md-12 p-3 mx-auto">
                 <div class="card">
-                    <div class="card-body text-center">
-                        {% if total_users %}
-                        <h5 class="card-title">Total Users</h5>
-                        <p class="card-text" style="font-size: 20px;">
-                            <i class="fas fa-users fa-lg"></i> {{ total_users }}
-                        </p>
-                        {% else %}
-                        <p class="card-text text-center">No data available for Another Graph.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
+                    <div class="card-body d-flex justify-content-center">
 
-
-            <div class="col-lg-4 col-md-4 p-3  mx-auto">
-                <div class="card">
-                    <div class="card-body text-center">
-                        {% if total_ingredient %}
-                        <h5 class="card-title">Total Ingredients</h5>
-                        <p class="card-text" style="font-size: 20px;"> <i class="fas fa-shopping-basket"></i> {{
-                            total_ingredient }}</p>
-                        {% else %}
-                        <p class="card-text text-center">No data available for Another Graph.</p>
-                        {% endif %}
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-4 p-3  mx-auto">
-                <div class="card">
-                    <div class="card-body text-center">
-                        {% if total_menu_items %}
-                        <h5 class="card-title">Total Menu Items</h5>
-                        <p class="card-text" style="font-size: 20px;"> <i class="fas fa-shopping-basket"></i> {{
-                            total_menu_items }}</p>
-                        {% else %}
-                        <p class="card-text text-center">No data available for Another Graph.</p>
-                        {% endif %}
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-lg-6 col-md-12 p-3 mx-auto">
-                    <div class="card">
-                        <div class="card-body d-flex justify-content-center">
-
-                            {% if top_menu_data %}
-                            <div class="chart-container">
-                                <canvas id="myChart2"></canvas>
-                            </div>
-                            {% else %}
-                            <p class="card-text text-center">No data available for Another Graph.</p>
-                            {% endif %}
+                        {% if top_menu_data %}
+                        <div class="chart-container">
+                            <canvas id="myChart2"></canvas>
                         </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 col-md-12 p-3 mx-auto">
-                    <div class="card">
-                        <div class="card-body d-flex justify-content-center">
-                            {% if top_three_label %}
-                            <div class="chart-container">
-                                <canvas id="myChart"></canvas>
-                            </div>
-                            {% else %}
-                            <p class="card-text text-center">No data available for Another Graph.</p>
-                            {% endif %}
-                        </div>
+                        {% else %}
+                        <p class="card-text text-center">No data available for Top Three Menu</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
+            <div class="col-lg-6 col-md-12 p-3 mx-auto">
+                <div class="card">
+                    <div class="card-body d-flex justify-content-center">
+                        {% if top_three_label %}
+                        <div class="chart-container">
+                            <canvas id="myChart"></canvas>
+                        </div>
+                        {% else %}
+                        <p class="card-text text-center">No data available for Top Three </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12 col-md-12 p-3 mx-auto">
                     <div class="card">
@@ -147,15 +159,71 @@
                                 <canvas id="weeklychart"></canvas>
                             </div>
                             {% else %}
-                            <p class="card-text text-center">No data available for Another Graph.</p>
+                            <p class="card-text text-center">No data available for Weekly Sales.</p>
                             {% endif %}
                         </div>
                     </div>
                 </div>
 
             </div>
-
         </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 p-3 mx-auto">
+                    <div class="card">
+                        <div class="card-body d-flex justify-content-center">
+
+                            {% if costs_per_month %}
+                            <div style="width: 100%; height: 400px;">
+                                <canvas id="monthlyChart"></canvas>
+                            </div>
+                            {% else %}
+                            <p class="card-text text-center">No data available for Monthy Sales.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <script>
+            // Retrieve the data from the backend
+            const costsPerMonth = {{ costs_per_month| tojson }};
+            const salesPerMonth = {{ sales_per_month| tojson }};
+
+            // Extract x and y values for cost and sales
+            const months = costsPerMonth.map(row => row.month);
+            const costs = costsPerMonth.map(row => row.sum);
+            const sales = salesPerMonth.map(row => row.sum);
+
+            // Create the line chart
+            const ctx4 = document.getElementById('monthlyChart').getContext('2d');
+            new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Cost',
+                        data: costs,
+                        borderColor: 'red',
+                        fill: false
+                    }, {
+                        label: 'Sales',
+                        data: sales,
+                        borderColor: 'blue',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        </script>
+
+
 
 
 

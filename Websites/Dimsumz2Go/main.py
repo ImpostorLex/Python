@@ -155,9 +155,11 @@ def isImage(img):
         filepath = os.path.join(folder_path, filename_without_prefix)
         img.data.save(filepath)
 
+        ic("Is Image")
         # return only the filename
         return filename_without_prefix
     else:
+        ic("Error")
         return 'Error'
 
 
@@ -206,7 +208,7 @@ def check_user(func):
     return wrapper
 
 
-def updateQuery(ingredients, quantity, weight, recipe, desc, num, isPushed, url, instruc):
+def updateQuery(ingredients, quantity, weight, recipe, desc, num, isPushed, url, instruc, profit):
 
     # Check for quantity errors first
     error_messages = check_Quantity(quantity)
@@ -241,6 +243,7 @@ def updateQuery(ingredients, quantity, weight, recipe, desc, num, isPushed, url,
         menu.name = recipe
         menu.desc = desc
         menu.cost = total
+        menu.profit = profit
 
         # Second Query the Image table
         image = Image.query.filter_by(menu_item_id=num).first()
@@ -633,8 +636,6 @@ def quantityError():
     elif num is not None:
         return render_template('popupDelete.html', error=error, num=num)
 
-# TODO: Add quantity validation to this page.
-
 
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
@@ -687,15 +688,13 @@ def create():
             ic(recipe)
             desc = request.form.get('desc')
             profit = request.form.get('price')
-            cost = sum(cost)
-            menu_item = menuItem(name=recipe, desc=desc,
-                                 cost=cost, profit=profit)
-            db.session.add(menu_item)
-            db.session.commit()
 
-            # Get the id of the inserted menu
-            menu_id = menu_item.id
-
+            try:
+                float(profit)
+                if float(profit) <= 0:
+                    raise ValueError
+            except ValueError:
+                return redirect(url_for('create', error="Profit cannot contain any letters and should not be less than or equal to zero"))
             # Insert url and instruction and as well as the menu_id as the foreign key to the image table
             url2 = form.url
 
@@ -703,29 +702,39 @@ def create():
 
             if is_valid_filetype == "Error":
                 return redirect(url_for('create', error="File type is invalid only images."))
-            instructions = request.form.get('instructions')
-            image_path = os.path.join('recipesImgs', is_valid_filetype)
-            image = Image(menu_item_id=menu_id, path=image_path,
-                          instructions=instructions)
-            db.session.add(image)
-            db.session.commit()
-
-            ctr = 1
-            for i, w, q in zip(ingredients_name, weight, quantity):
-
-                get_id_of_ingredient = Ingredient.query.filter_by(
-                    name=i).first()
-                get_id_of_weight = Weight.query.filter_by(name=w).first()
-
-                # Insert menu_id recently created and other details such as list_order and weight_id
-                insert_ingredient = menuItemIngredient(
-                    menu_item_id=menu_id, ingredient_id=get_id_of_ingredient.id, list_order=ctr, weight_id=get_id_of_weight.id, quantity=q)
-
-                ctr += 1
-                db.session.add(insert_ingredient)
+            else:
+                cost = sum(cost)
+                menu_item = menuItem(name=recipe, desc=desc,
+                                     cost=cost, profit=profit)
+                db.session.add(menu_item)
                 db.session.commit()
 
-            return redirect(url_for('recipes'))
+                # Get the id of the inserted menu
+                menu_id = menu_item.id
+                ic("No Error?")
+                instructions = request.form.get('instructions')
+                image_path = os.path.join('recipesImgs', is_valid_filetype)
+                image = Image(menu_item_id=menu_id, path=image_path,
+                              instructions=instructions)
+                db.session.add(image)
+                db.session.commit()
+
+                ctr = 1
+                for i, w, q in zip(ingredients_name, weight, quantity):
+
+                    get_id_of_ingredient = Ingredient.query.filter_by(
+                        name=i).first()
+                    get_id_of_weight = Weight.query.filter_by(name=w).first()
+
+                    # Insert menu_id recently created and other details such as list_order and weight_id
+                    insert_ingredient = menuItemIngredient(
+                        menu_item_id=menu_id, ingredient_id=get_id_of_ingredient.id, list_order=ctr, weight_id=get_id_of_weight.id, quantity=q)
+
+                    ctr += 1
+                    db.session.add(insert_ingredient)
+                    db.session.commit()
+
+                return redirect(url_for('recipes'))
 
     elif form.validate_on_submit() == False:
         first_field = []
@@ -768,7 +777,13 @@ def dashboard():
             ingredient = Ingredient.query.filter_by(
                 id=ingredient_expired.ingredient_id).first()
             num_to_reduce = float(ingredient_expired.quantity_added)
-            ingredient.quantity = ingredient.quantity - num_to_reduce
+
+            subtracted = ingredient.quantity - num_to_reduce
+
+            if subtracted < 0:
+                ingredient.quantity = 0
+            else:
+                ingredient.quantity = subtracted
 
             # Delete the matching row
             db.session.delete(ingredient_expired)
@@ -890,6 +905,15 @@ def edit(num):
         weight = []
         ingredients_name = []
 
+        profit = request.form.get('price')
+
+        try:
+            float(profit)
+            if float(profit) <= 0:
+                raise ValueError
+        except ValueError:
+            return redirect(url_for('edit', num=num, error_file="Only numbers and should not be less than zero"))
+
         # Due to the deleted fields are still being passed in the POST request get only the first form field
         if button_value == 'pushed':
 
@@ -941,7 +965,7 @@ def edit(num):
 
         else:
             cost = updateQuery(ingredients_name, quantity,
-                               weight, recipe, desc, num, button_value, url, instruc)
+                               weight, recipe, desc, num, button_value, url, instruc, profit)
             if cost == 'Success':
                 return redirect(url_for('dashboard', message="Form submitted succesfully"))
             else:
@@ -1203,10 +1227,12 @@ def graphs():
 
     ingredient_low_data = []
     ingredient_low_labels = []
-    for ingr in ingredients:
 
-        ingredient_low_labels.append(ingr.name)
-        ingredient_low_data.append(ingr.quantity)
+    if ingredients:
+        for ingr in ingredients:
+
+            ingredient_low_labels.append(ingr.name)
+            ingredient_low_data.append(ingr.quantity)
 
     # Top three most bought menu item current month
 
@@ -1223,16 +1249,24 @@ def graphs():
 
     top_three_menu = []
     top_three_labels = []
-    for top in top_three_menu_items:
 
-        menu_item_id = top.menu_item_id
+    ic(top_three_menu_items)
+    if top_three_menu_items:
 
-        # Query the menu name
-        menu_item_name = menuItem.query.filter_by(id=menu_item_id).first()
-        top_three_labels.append(menu_item_name.name)
+        for top in top_three_menu_items:
+            ic("Yes")
+            menu_item_id = top.menu_item_id
 
-        row_count = top.row_count
-        top_three_menu.append(row_count)
+            # Query the menu name
+            # Query the Menu item first to check if the menu exists:
+            menu_item_name = menuItem.query.filter_by(id=menu_item_id).first()
+            if menu_item_name:
+                top_three_labels.append(menu_item_name.name)
+
+                row_count = top.row_count
+                top_three_menu.append(row_count or 0)
+            else:
+                break
 
     # Get total users
     total_users = Users.query.count() or 0
@@ -1243,7 +1277,7 @@ def graphs():
     # Get total menu
     total_menu_items = menuItem.query.count() or 0
 
-    # Weekly sales
+# ----------------------------- Weekly sales -----------------------------
     current_date = datetime.today()
 
     # Get the first day of the current month
@@ -1273,7 +1307,43 @@ def graphs():
 
     # ic(weekly_sales_total) outputs :  weekly_sales_total: {1: 99.0}
 
-    return render_template('graph.html', weekly_sales_total=weekly_sales_total, total_menu_items=total_menu_items, total_users=total_users,  total_ingredient=total_ingredient, top_menu_data=top_three_menu, top_menu_labels=top_three_labels, top_three_label=ingredient_low_labels, top_three_data=ingredient_low_data)
+
+# -----------------------------  Monthy Sales -----------------------------
+    current_year = datetime.today().year
+    current_date = datetime.today()
+    current_month = "2023-07-1"
+    # Query sales data per month
+
+    sales_per_month = db.session.query(
+        func.extract('month', Sale.date_added).label('month'),
+        func.sum(Sale.profit).label('total_profit')
+    ).filter(
+        func.extract('year', Sale.date_added) == current_year,
+        func.extract('month', Sale.date_added) <= current_month
+    ).group_by(
+        func.extract('month', Sale.date_added)
+    ).all()
+
+    # Query costs data per month
+    costs_per_month = db.session.query(
+        func.extract('month', IngredientCost.date_added).label('month'),
+        func.sum(IngredientCost.cost).label('total_cost')
+    ).filter(
+        func.extract('year', IngredientCost.date_added) == current_year,
+        func.extract('month', IngredientCost.date_added) <= current_month
+    ).group_by(
+        func.extract('month', IngredientCost.date_added)
+    ).all()
+
+    sales_per_month = [{'month': row[0], 'sum': row[1]}
+                       for row in sales_per_month]
+    costs_per_month = [{'month': row[0], 'sum': row[1]}
+                       for row in costs_per_month]
+
+    ic(costs_per_month, sales_per_month)
+# ----------------------------- ^ Monthly sales ^ -----------------------------
+
+    return render_template('graph.html', costs_per_month=costs_per_month, sales_per_month=sales_per_month, weekly_sales_total=weekly_sales_total, total_menu_items=total_menu_items, total_users=total_users,  total_ingredient=total_ingredient, top_menu_data=top_three_menu, top_menu_labels=top_three_labels, top_three_label=ingredient_low_labels, top_three_data=ingredient_low_data)
 
 
 @app.route('/home', methods=['GET', 'POST'])
@@ -1291,6 +1361,8 @@ def inventory():
 
     weight_list = []
     weight_list2 = []
+    rounded_quantity = []
+
     for i in get_ingredients:
 
         weight_cat = Weight.query.filter_by(id=i.weight_id).first()
@@ -1309,13 +1381,13 @@ def inventory():
         for i in get_matching_ingredients:
             weight_ids = Weight.query.filter_by(id=i.weight_id).first()
             weight_list2.append(weight_ids.name)
-        return render_template('ingredient.html', ingre=get_matching_ingredients, zip=zip, message=message, weight_list=weight_list2)
+        return render_template('ingredient.html', round=round, ingre=get_matching_ingredients, zip=zip, message=message, weight_list=weight_list2)
     elif not get_matching_ingredients and is_query == '1':
         ic("Is query")
         message = "It looks like that Ingredient does not exists please try again"
-        return render_template('ingredient.html', ingre=get_ingredients, zip=zip, weight_list=weight_list, message=message)
+        return render_template('ingredient.html', round=round, ingre=get_ingredients, zip=zip, weight_list=weight_list, message=message)
     else:
-        return render_template('ingredient.html', ingre=get_ingredients, zip=zip, weight_list=weight_list, message=message)
+        return render_template('ingredient.html', round=round, ingre=get_ingredients, zip=zip, weight_list=weight_list, message=message)
 
 
 @app.route('/searchIngredient', methods=['POST', 'GET'])
