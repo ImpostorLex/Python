@@ -39,6 +39,10 @@
                         title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
                         <i class="fa-solid fa-warehouse fa-2x" style="color:white;"></i>
                     </a>
+                    <a href="{{ url_for('recipes') }}" class="nav-link py-3 px-2 hovertext" data-hover="Recipes"
+                        title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
+                        <i class="fa-solid fa-utensils fa-2x" style="color:white;"></i>
+                    </a>
 
                     <a href="{{ url_for('graphs') }}" class="nav-link py-3 px-2 hovertext" data-hover="Graphs" title=""
                         data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Dashboard">
@@ -88,7 +92,7 @@
                     {% endfor %}
                 </ul>
                 <!-- Paragraph to be populated -->
-                <p style="font-size:1.50rem;">{{ img.instructions }}
+                <p style="font-size:1.50rem;">{{ img.instructions|format_instructions|safe }}
                 </p>
 
                 <a href="{{ url_for('edit', num=num ) }}" class=" text-right">Edit |</a>

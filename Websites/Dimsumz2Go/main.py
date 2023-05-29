@@ -344,9 +344,24 @@ def ingredient_to_dict(ingredient):
     return {'id': ingredient.id, 'name': ingredient.name, 'quantity': ingredient.quantity, 'cost': ingredient.cost, 'weight_id': ingredient.weight_id}
 
 
+@app.template_filter('format_instructions')
+def format_instructions(instructions):
+    steps = instructions.split('\n')
+    formatted_steps = []
+    for step in steps:
+        if step.strip():
+            step_parts = step.strip().split(':')
+            if len(step_parts) >= 2:
+                step_number = step_parts[0].strip()
+                step_description = ':'.join(step_parts[1:]).strip()
+                formatted_steps.append('{}) {}'.format(
+                    step_number, step_description))
+    return '<br>'.join(formatted_steps)
 # Sample output:
  # Outputs; ic| req_ingredient_list: [('Lemon', 4, 'oz')]
    #  dup_req_ingredient_list: [('Patty', 1, 'kg'), ('Patty', 2, 'lb')]
+
+
 def check_ingredient_availability(unique, duplicates, order):
 
     satisfied = []
@@ -1004,7 +1019,7 @@ def editIngredient(name):
     old_quantity_val = ingredient.quantity
 
     # Query the weight name using the ID
-    weight = Weight.query.filter_by(id=ingredient.id).first()
+    weight = Weight.query.filter_by(id=ingredient.weight_id).first()
     form.weight.data = weight.name
 
     if request.method == 'POST' and form.validate_on_submit():
@@ -1063,6 +1078,7 @@ def editIngredient(name):
             _ingredient = Ingredient.query.filter_by(name=name).first()
             _ingredient.name = request.form.get('name')
             _ingredient.cost = request.form.get('price')
+            weight_type = request.form.get('weight')
             _weight = Weight.query.filter_by(name=weight_type).first()
             _ingredient.weight_id = _weight.id
             db.session.commit()
@@ -1073,7 +1089,6 @@ def editIngredient(name):
             return render_template("editIngredient.html", form=form, name=name, error=error)
 
     elif request.method == 'POST':
-        ic("eror")
 
         try:
             # This checks if the price can be converted to float if it is letter it will throw an error.
@@ -1235,8 +1250,6 @@ def graphs():
             ingredient_low_data.append(ingr.quantity)
 
     # Top three most bought menu item current month
-
-    # Get the current month
     current_month = datetime.now().month
 
     # Query the most bought menu item in the current month
@@ -1254,7 +1267,6 @@ def graphs():
     if top_three_menu_items:
 
         for top in top_three_menu_items:
-            ic("Yes")
             menu_item_id = top.menu_item_id
 
             # Query the menu name
@@ -1295,15 +1307,16 @@ def graphs():
 
     sales_data = Sale.query.all()
     # Replace `sales_data` with the variable or query that fetches the sales data
-    for sale in sales_data:
-        sale_date = sale.date_added
-        sale_week_number = (sale_date -
-                            start_date_of_week.date()).days // 7 + 1
+    if sales_data:
+        for sale in sales_data:
+            sale_date = sale.date_added
+            sale_week_number = (sale_date -
+                                start_date_of_week.date()).days // 7 + 1
 
-        # Add the sale to the corresponding week
-        if sale_week_number not in weekly_sales_total:
-            weekly_sales_total[sale_week_number] = 0.0
-        weekly_sales_total[sale_week_number] += sale.profit
+            # Add the sale to the corresponding week
+            if sale_week_number not in weekly_sales_total:
+                weekly_sales_total[sale_week_number] = 0.0
+            weekly_sales_total[sale_week_number] += sale.profit
 
     # ic(weekly_sales_total) outputs :  weekly_sales_total: {1: 99.0}
 
@@ -1340,7 +1353,6 @@ def graphs():
     costs_per_month = [{'month': row[0], 'sum': row[1]}
                        for row in costs_per_month]
 
-    ic(costs_per_month, sales_per_month)
 # ----------------------------- ^ Monthly sales ^ -----------------------------
 
     return render_template('graph.html', costs_per_month=costs_per_month, sales_per_month=sales_per_month, weekly_sales_total=weekly_sales_total, total_menu_items=total_menu_items, total_users=total_users,  total_ingredient=total_ingredient, top_menu_data=top_three_menu, top_menu_labels=top_three_labels, top_three_label=ingredient_low_labels, top_three_data=ingredient_low_data)
@@ -1405,7 +1417,6 @@ def searchIngredient():
 
 @app.route('/item/<int:num>', methods=['GET', 'POST'])
 @login_required
-# @check_user TODO find a way to implement this:
 def item(num):
 
     img = Image.query.filter_by(id=num).first()
@@ -1485,23 +1496,8 @@ def register():
     return render_template("register.html", form=form)
 
 
-# @app.route('/buyIngredients', methods=['GET', 'POST'])
-# def buyIngredients():
-
-#     data1 = request.args.get('data1').split(',')
-#     data2 = request.args.get('data2').split(',')
-#     data3 = request.args.get('data3').split(',')
-#     data4 = request.args.get('data4')
-#     data5 = request.args.get('data5')
-
-#     date = datetime.now()
-
-#     return render_template('missingIngredients.html', zip=zip, missing_ingre=data1, missing_qty=data2, missing_weight=data3, is_missing=data4, date=date, cost=data5)
-
-
 @app.route('/recipes/', methods=['GET', 'POST'])
 @login_required
-# @check_user # TODO: check_user
 def recipes():
 
     menus = menuItem.query.all()

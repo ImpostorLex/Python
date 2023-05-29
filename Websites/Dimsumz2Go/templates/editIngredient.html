@@ -168,6 +168,7 @@
                 document.getElementById("recipe").disabled = false;
                 document.getElementById("price").disabled = false;
                 document.getElementById("ingredients-select-box").disabled = false;
+                document.getElementById("stocks").disabled = true;
                 document.getElementById('add-date').disabled = true;
                 document.getElementById('exp-date').disabled = true;
             }
@@ -178,6 +179,7 @@
 
                 document.getElementById("recipe").disabled = true;
                 document.getElementById("price").disabled = true;
+                document.getElementById("stocks").disabled = false;
                 document.getElementById("ingredients-select-box").disabled = true;
                 document.getElementById('add-date').disabled = false;
                 document.getElementById('exp-date').disabled = false;
@@ -219,6 +221,8 @@
                 document.getElementById("recipe").disabled = true;
                 document.getElementById("price").disabled = true;
                 document.getElementById("ingredients-select-box").disabled = true;
+                document.getElementById("stocks").disabled = true;
+
             }
             else {
                 unlockButton.addEventListener('click', function () {
@@ -230,6 +234,8 @@
                     document.getElementById("ingredients-select-box").disabled = false;
                     document.getElementById("recipe").disabled = false;
                     document.getElementById("price").disabled = false;
+                    document.getElementById("stocks").disabled = false;
+
                 });
                 unlockButton.click()
             }
