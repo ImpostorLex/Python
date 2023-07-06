@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CPU-Algorithm Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="/static/css/styles.css">
+    <script src="/static/js/script.js"></script>
+</head>
+
+<body>
+    <!-- Center a card in the middle of the page -->
+
+    <!-- The height 100vh ensures the container filles the entire viewport height making the card-body
+    vertically centered -->
+    <!-- viewport height = percentage of height of the browser -->
+
+    <div class="col-lg-12 pt-5">
+        <div class="d-flex justify-content-evenly align-items-center">
+            <div class="card custom-card w-75">
+                <div class="card-body">
+                    <h3 class="card-title text-center">CPU-Algorithm Calculator</h3>
+                    <form name="myForm" id="myForm">
+
+
+                        <label for="selectBox" class="form-label">Algorithm</label>
+                        <select id="selectBox" class="form-select w-25" aria-label="Default select example">
+                            <option selected value="0">Firs Come First Serve</option>
+                            <option value="1">SJF(Non-preemptive)
+                            </option>
+                            <option value="2">Round Robin</option>
+                            <option value="3">SRTF (Pre-emptive)</option>
+                        </select>
+
+                        <div class="mb-3 pt-2">
+                            <label for="arrivalTime" class="form-label">Arrival Times</label>
+                            <input type="text" class="form-control" placeholder="e.g 0 2 4 6 8" id="arrivalTime">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="burstTime" class="form-label">Burst Times</label>
+                            <input type="text" class="form-control" placeholder="e.g 2 4 6 8 10" id="burstTime">
+                        </div>
+                        <div id="formContainer" class="pb-3">
+
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Solve</button>
+                </div>
+                </form>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-12 pt-5">
+            <div class="d-flex justify-content-evenly align-items-center">
+                <div class="card custom-card w-75">
+                    <div class="card-body">
+                        <h3 class="card-title text-center">Output:</h3>
+
+                    </div>
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+                    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+                    crossorigin="anonymous"></script>
+</body>
+
+</html>
