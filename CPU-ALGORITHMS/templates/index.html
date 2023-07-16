@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link href="/static/css/styles.css">
-    <script src="/static/js/script.js"></script>
 </head>
 
 <body>
@@ -23,14 +22,13 @@
             <div class="card custom-card w-75">
                 <div class="card-body">
                     <h3 class="card-title text-center heading-title">CPU-Algorithm Calculator</h3>
-                    <form name="myForm" class="needs-validation" novalidate id="myForm" method="POST"
-                        action="{{ url_for('index') }}">
+                    <form class="needs-validation" method="POST" action="{{ url_for('index') }}" novalidate>
 
 
                         <label for="selectBox" class="form-label">Algorithm</label>
                         <select id="selectBox" name="selectBox" class="form-select w-25"
                             aria-label="Default select example">
-                            <option selected value="0">Firs Come First Serve</option>
+                            <option selected value="0">FirsT Come First Serve</option>
                             <option value="1">SJF(Non-preemptive)
                             </option>
                             <option value="2">Round Robin</option>
@@ -40,7 +38,7 @@
                         <div class="mb-3 pt-2">
                             <label for="arrivalTime" class="form-label">Arrival Times</label>
                             <input type="text" autocomplete="off" class="form-control" placeholder="e.g 0 2 4 6 8"
-                                name="arrivalTime" id="arrivalTime">
+                                name="arrivalTime" id="arrivalTime" required>
                             <div class="invalid-feedback">
                                 Input error, input must not contain any letters and AT and BT should have the same
                                 length
@@ -50,28 +48,41 @@
                         <div class="mb-3">
                             <label for="burstTime" class="form-label">Burst Times</label>
                             <input type="text" autocomplete="off" class="form-control" placeholder="e.g 2 4 6 8 10"
-                                name="burstTime" id="burstTime">
+                                name="burstTime" id="burstTime" required>
                             <div class="invalid-feedback">
                                 Input error, input must not contain any letters and AT and BT should have the same
                                 length
                             </div>
                         </div>
 
-                        <div id="formContainer" class="pb-3">
 
+                        <div id="formContainer" class="mb-2">
+                            <!-- Place the <select> element and dynamic input field creation logic here -->
                         </div>
 
+                        {% if error_message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error_message }}
+                        </div>
+                        {% endif %}
+
                         <button type="submit" class="btn btn-primary">Solve</button>
+
+                    </form>
                 </div>
-                </form>
-
             </div>
-
         </div>
+    </div>
 
-        <div class="col-lg-12 pt-5">
-            <div class="d-flex justify-content-evenly align-items-center">
-                <div class="card custom-card w-75">
+    <div class="col-lg-12 pt-5">
+        <div class="d-flex justify-content-evenly align-items-center">
+            <div class="card custom-card w-75">
+                <div class="card-body">
+                    {% if m %}
+                    <div class="bg-success text-white" style="font-weight:900;">
+                        Mode: {{ m }}
+                    </div>
+                    {% endif %}
                     <div class="card-body">
                         {% if wt %}
                         <h3 class="card-title text-center">Output:</h3>
@@ -80,7 +91,8 @@
                             <tbody>
                                 <tr>
                                     {% for p in process_mapper %}
-                                    <th scope="col" style="background-color: lightblue; color: white;">P {{ p }}</th>
+                                    <th scope="col" style="background-color: lightblue; color: white;">P {{ p }}
+                                    </th>
                                     {% endfor %}
                                 </tr>
                                 <tr>
@@ -90,6 +102,24 @@
                                 </tr>
                             </tbody>
                         </table>
+                        {% elif wt2 %}
+                        <table class="table w-50 table-bordered mx-auto">
+                            <thead>
+                                <tr>
+                                    {% for _, p in gantt_chart %}
+                                    <th scope="col" style="background-color: lightblue; color: white;">{{ p }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    {% for time, _ in gantt_chart %}
+                                    <td>{{ time }}</td>
+                                    {% endfor %}
+                                </tr>
+                            </tbody>
+                        </table>
+
                         {% endif %}
 
                         <table class="table">
@@ -103,6 +133,8 @@
                                 </tr>
                             </thead>
                             <tbody>
+
+                                {% if tat_sum %}
                                 {% for p,n,a,b,rst,tat,wt in zip(process_mapper, gantt_chart.values(),at, bt
                                 ,rst,tat,wt ) %}
 
@@ -115,7 +147,22 @@
                                 </tr>
                                 {% endfor %}
 
+                                {% elif wt2 %}
+
+                                {% for p,item, tat,wt in zip(process, sorted_abt,tat,wt2) %}
+
+                                <tr>
+                                    <th>{{ p }}</th>
+                                    <th>{{ item[0] }}</th>
+                                    <th>{{ item[1] }}</th>
+                                    <th>{{ tat }}</th>
+                                    <th>{{ wt }}</th>
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
                             </tbody>
+
+                            {% if tat_sum %}
                             <tr>
                                 <td></td>
                                 <td></td>
@@ -123,6 +170,16 @@
                                 <td>{{ tat_sum }} / {{ num_of_process }} = {{ tat_avg}} </td>
                                 <td>{{ wt_sum }} / {{ num_of_process}} = {{ wt_avg }} </td>
                             </tr>
+
+                            {% elif wt2 %}
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td>Average</td>
+                                <td>{{ tat_sum2 }} / {{ num_p }} = {{ tat_avg}} </td>
+                                <td>{{ sum_wt }} / {{ num_p }} = {{ wt_avg }} </td>
+                            </tr>
+                            {% endif %}
                         </table>
                     </div>
                 </div>
@@ -133,13 +190,7 @@
 
 
 
-
-
-
-
-
-
-
+        <script src="static/js/script.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
             crossorigin="anonymous"></script>
