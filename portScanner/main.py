@@ -23,6 +23,7 @@ try:
 
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # connect_ex returns a value 1 for open and 0 for close
+        socket.setdefaulttimeout(1)
         port_num = tcp.connect_ex(target, port)
 
         if port_num == 1:
