@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Simple Text Editor</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css"
+        type="text/css" media="screen" charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #editable {
+            width: 100%;
+            height: 100vh;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            line-height: 1.5;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <textarea id="editable" placeholder="Start typing..."></textarea>
+    <script src="https://cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+    <script>var editor = new MediumEditor('.editable');</script>
+    <script>
+        // Optional: You can add more functionality with JavaScript here
+        const editor = document.getElementById('editable');
+
+        // Optional: Save content to localStorage on every change
+        editor.addEventListener('input', () => {
+            localStorage.setItem('editorContent', editor.value);
+        });
+
+        // Optional: Load content from localStorage on page load
+        const savedContent = localStorage.getItem('editorContent');
+        if (savedContent) {
+            editor.value = savedContent;
+        }
+    </script>
+</body>
+
+</html>
